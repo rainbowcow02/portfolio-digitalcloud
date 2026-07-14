@@ -141,18 +141,22 @@
 
         <div class="hero__inner">
           <div class="hero__intro">
-            <!-- data-poses drives the hover cycle in js/motion.js. Add a pose by
-                 appending its path here — no JS change needed. -->
-            <div class="hero__avatar" data-poses="assets/Avatar.png">
-              <img
-                class="hero__avatar-img"
-                src="assets/Avatar.png"
-                alt="Illustrated portrait of Lindsay Lee"
-                width="144"
-                height="144"
-                data-hero-reveal="avatar"
-              /><!-- on the img, not .hero__avatar: GSAP leaves an inline transform
-                       behind, which would outrank the container's :hover transform -->
+            <!-- The entrance pop lives on this wrapper, not on .hero__avatar and not
+                 on the img: GSAP leaves an inline transform behind, which would
+                 outrank the container's :hover transform, and the container's
+                 circular overflow:hidden would clip an img that moved inside it. -->
+            <div class="hero__avatar-pop" data-hero-reveal="avatar">
+              <!-- data-poses drives the hover cycle in js/motion.js. Add a pose by
+                   appending its path here — no JS change needed. -->
+              <div class="hero__avatar" data-poses="assets/Avatar.png">
+                <img
+                  class="hero__avatar-img"
+                  src="assets/Avatar.png"
+                  alt="Illustrated portrait of Lindsay Lee"
+                  width="144"
+                  height="144"
+                />
+              </div>
             </div>
 
             <div class="hero__bio">

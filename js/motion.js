@@ -135,16 +135,26 @@ async function playHeroEntrance() {
   const chars = name ? splitHeroName(name) : null;
   const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
+  // She pops up into frame rather than dissolving in: rising from below, overshooting
+  // her resting spot, settling. The fade is a separate, much shorter tween — carried
+  // by the back ease it would read as the crossfade we're trying to get away from, so
+  // she's opaque a quarter of the way up and the rest is pure movement.
   tl.fromTo(
     "[data-hero-reveal='avatar']",
-    { opacity: 0, scale: 0.94 },
-    { opacity: 1, scale: 1, duration: 0.7 },
+    { opacity: 0 },
+    { opacity: 1, duration: 0.22, ease: "none" },
     0.15
   )
     .fromTo(
+      "[data-hero-reveal='avatar']",
+      { y: 38, scale: 0.92 },
+      { y: 0, scale: 1, duration: 0.5, ease: "back.out(1.2)" },
+      0.15
+    )
+    .fromTo(
       "[data-hero-reveal='bio']",
       { opacity: 0, y: 12 },
-      { opacity: 1, y: 0, duration: 0.6, stagger: 0.08 },
+      { opacity: 1, y: 0, duration: 0.85, stagger: 0.08 },
       0.3
     );
 
@@ -155,15 +165,19 @@ async function playHeroEntrance() {
     tl.fromTo(name, { opacity: 0 }, { opacity: 1, duration: 0.8 }, 0.75);
   }
 
+  // The meta lines are reference material, not a headline — they should arrive, not
+  // perform. A long soft fade over a short rise (power1, not the timeline's power3)
+  // reads as settling into place while the eye is still on the name.
   tl.fromTo(
     "[data-hero-reveal='meta']",
-    { opacity: 0, y: 8 },
-    { opacity: 1, y: 0, duration: 0.6, stagger: 0.08 },
-    1.3
+    { opacity: 0, y: 6 },
+    { opacity: 1, y: 0, duration: 1, ease: "power1.out", stagger: 0.14 },
+    1.35
   );
 
   if (arrow) {
-    // the standing invitation to scroll — starts once the scene has settled
+    // the standing invitation to scroll — held until the meta row it sits in has
+    // finished arriving, so the arrow isn't bobbing while its own line is still moving
     tl.to(
       arrow,
       {
@@ -173,7 +187,7 @@ async function playHeroEntrance() {
         repeat: -1,
         yoyo: true,
       },
-      1.45
+      2.1
     );
   }
 }

@@ -84,6 +84,13 @@ body.is-nav-open .hero__border {
   margin-left: calc(90px - var(--page-inset));
 }
 
+/* Entrance-only stage for the avatar. Exists purely so GSAP has a transform to own:
+   the pop overshoots past its resting position, and if it drove .hero__avatar the
+   inline transform it leaves behind would permanently outrank the :hover rule below. */
+.hero__avatar-pop {
+  flex-shrink: 0;
+}
+
 /* Hovering cycles the pose (js/motion.js swaps the img src). The tilt and scale give
    the container life the instant the cursor lands, before the first pose swap. */
 .hero__avatar {
@@ -162,7 +169,7 @@ body.is-nav-open .hero__border {
 
 .company-link:hover,
 .company-link:focus-visible {
-  background-size: 100% var(--link-underline-hover);
+  background-size: 100% var(--link-underline-hover-inline);
 }
 
 /* Masthead + meta */

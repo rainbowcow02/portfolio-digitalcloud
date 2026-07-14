@@ -115,9 +115,18 @@
   --duration-slow: 700ms;
 
   /* Link highlighter: the resting underline swells to a marker stroke on hover.
-     Drawer links are display-size, so they thicken as a bar instead of filling. */
+     Drawer links are display-size, so they thicken as a bar instead of filling.
+
+     Two fill heights, because the ink grows up from the bottom of the background box
+     and the two link types don't put that box in the same place. Nav links carry
+     4px of vertical padding, which drops their box clear of the glyphs, so 0.72em of
+     ink tops out around mid-x-height. An inline .company-link has no padding — its
+     box bottom sits just under the baseline — so the same 0.72em swallows the whole
+     lowercase and the text stops being readable. 0.52em lands its top edge in the
+     same place: ink through the lower half of the letters, tips still legible. */
   --link-underline-rest: 2px;
   --link-underline-hover: 0.72em;
+  --link-underline-hover-inline: 0.52em;
   --link-underline-drawer-rest: 3px;
   --link-underline-drawer-hover: 8px;
 

@@ -66,14 +66,16 @@ Time-based, not scroll-based — a scroll trigger at the top of the page may nev
 
 | At | Element | Motion |
 |---|---|---|
-| 0.15s | avatar | scale 0.94→1 + fade, `power3.out` |
+| 0.15s | avatar | pops up: y 38px→0 + scale 0.92→1, `back.out(1.9)` 0.95s, overshooting ~5px above its resting spot. A separate 0.22s linear fade — she's opaque a quarter of the way up, so the entrance reads as movement rather than a dissolve |
 | 0.30s | tagline | y 12px→0 + fade |
 | 0.42s | bio paragraphs | 80ms stagger |
 | 0.75s | **"Lindsay Lee"** | letters clip up from a per-word mask, 35ms stagger, `power3.out` 0.9s |
-| 1.30s | meta pairs | fade in |
-| 1.45s | arrow | begins a slow idle bob (2.4s loop, ~3px, `sine.inOut`) |
+| 1.35s | meta pairs | y 6px→0 + a long 1s fade on `power1.out`, 140ms stagger — reference material, so it settles in rather than performing |
+| 2.10s | arrow | begins a slow idle bob (2.4s loop, ~3px, `sine.inOut`), held until the meta row it sits in has finished arriving |
 
 Mark the non-name elements `data-hero-reveal`; drive the whole thing from one GSAP timeline.
+
+The avatar's `data-hero-reveal` sits on a `.hero__avatar-pop` wrapper, not on `.hero__avatar` or its img. Both alternatives are dead ends: GSAP leaves an inline transform behind, which would permanently outrank the container's `:hover` scale/tilt (and its 320ms CSS transition would smear every frame GSAP wrote), while an img moving *inside* the container would be clipped by its circular `overflow: hidden`. The wrapper is a transform surface nothing else claims.
 
 ### Splitting the h1
 
@@ -133,7 +135,9 @@ Implement via a `data-poses` attribute on `.hero__avatar` listing the image path
 
 The best-value microinteraction on the page, and it's already half-built. `.company-link` paints its lilac underline as a `background-image` gradient at `background-size: 100% 2px`, anchored bottom-left, thickening to `3px` on hover.
 
-Change: on hover/focus, **swell the fill to ~0.72em** — a real highlighter stroke rising up behind the text, `--duration-med`, `--ease-out`. Add `mix-blend-mode: multiply` **on the background layer** so the lilac reads like translucent marker ink over the black glyphs rather than a flat block behind them. Hold the text still; only the ink moves.
+Change: on hover/focus, **swell the fill** — a real highlighter stroke rising up behind the text, `--duration-med`, `--ease-out`. Hold the text still; only the ink moves.
+
+Two fill heights, because the ink grows from the bottom of the *background box* and the two link types don't put that box in the same place. Nav links carry 4px of vertical padding, which drops their box clear of the glyphs, so `--link-underline-hover: 0.72em` tops out around a third of the x-height. An inline `.company-link` has no padding — its box bottom sits just under the baseline — so the same 0.72em swallows the entire lowercase and the sentence stops being readable mid-hover. `--link-underline-hover-inline: 0.52em` lands its top edge in the same visual place (measured: ink top 4.3px above a 8.4px x-height). Match the *look*, not the number.
 
 Apply the same treatment to `.nav-link` / `.nav-overlay__link` (currently a `scaleX(0)→scaleX(1)` bar in `css/sections/nav.css`) so all three link treatments finally speak one language: **grow from left, swell in height.** This is where "high craft" is legible in half a second.
 
