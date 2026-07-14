@@ -47,6 +47,9 @@
   left: 70%;
   width: clamp(300px, 25vw, 355px);
   height: auto;
+  /* modest: this is the one flower whose multiply blend actually does work (it
+     crosses the snow panel), so every frame it moves costs a real repaint */
+  --drift: 55px;
   mix-blend-mode: multiply;
 }
 

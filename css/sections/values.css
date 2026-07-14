@@ -26,6 +26,7 @@
   left: 3%;
   width: clamp(220px, 18vw, 260px);
   height: auto;
+  --drift: 50px;
   mix-blend-mode: multiply;
 }
 

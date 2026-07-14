@@ -26,11 +26,14 @@
 }
 
 /* Decor — flowers sit behind the content */
+/* --drift feeds the shared parallax transform in hero.css. Bigger, further-back
+   flowers drift more, which is what reads as depth. */
 .flower-decor--snapshots {
   top: var(--space-20);
   left: 10%;
   width: min(333px, 24vw);
   height: auto;
+  --drift: 60px;
   mix-blend-mode: multiply;
 }
 
@@ -39,6 +42,7 @@
   left: -18%;
   width: min(655px, 46vw);
   height: auto;
+  --drift: 110px;
   mix-blend-mode: multiply;
 }
 

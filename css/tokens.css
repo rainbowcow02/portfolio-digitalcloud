@@ -113,6 +113,21 @@
   --duration-fast: 180ms;
   --duration-med: 320ms;
   --duration-slow: 700ms;
+
+  /* Link highlighter: the resting underline swells to a marker stroke on hover.
+     Drawer links are display-size, so they thicken as a bar instead of filling. */
+  --link-underline-rest: 2px;
+  --link-underline-hover: 0.72em;
+  --link-underline-drawer-rest: 3px;
+  --link-underline-drawer-hover: 8px;
+
+  /* Avatar hover (pose cycle lives in js/motion.js) */
+  --avatar-hover-scale: 1.03;
+  --avatar-hover-tilt: -1.5deg;
+
+  /* Headroom the hero name's per-word mask adds below the baseline so the
+     descender in "Lindsay" isn't clipped. Also the letters' start offset. */
+  --name-mask-pad: 0.18em;
 }
 
 /* the header is fixed, so anything sitting below it pads by --header-height;

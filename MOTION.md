@@ -1,6 +1,12 @@
 # Motion & microinteraction plan
 
-Status: **planned, not yet built.** Slots into M8/M9 of [PRD.md](PRD.md).
+Status: **built and verified**, except the avatar poses.
+
+**Outstanding: 3–4 avatar pose PNGs** at the same 215×215 crop as `assets/Avatar.png`.
+The cycling machinery is live and asset-agnostic — it reads `data-poses` on
+`.hero__avatar` in `index.html`, which currently lists only the base pose (so hovering
+does nothing but tilt). Drop the files into `assets/` and append their paths to that
+attribute; no JS change needed.
 
 ## Context
 
