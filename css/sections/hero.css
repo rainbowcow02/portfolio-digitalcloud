@@ -72,7 +72,7 @@ body.is-nav-open .hero__border {
   padding:
     calc(var(--header-height) + var(--space-20))
     var(--page-inset)
-    var(--space-12);
+    var(--space-10);
 }
 
 /* Intro: avatar + bio */
@@ -272,7 +272,7 @@ html.js-motion .hero__name .char {
       calc(var(--header-height) + var(--space-10))
       var(--page-inset)
       var(--space-10);
-    gap: var(--space-10);
+    gap: var(--space-6);
   }
 
   .hero__intro {
@@ -307,7 +307,7 @@ html.js-motion .hero__name .char {
 
   .hero__meta {
     width: 100%;
-    max-width: 315px;
+    max-width: 100%;
     justify-content: space-between;
     gap: var(--space-4);
     padding-left: 0;
@@ -318,7 +318,7 @@ html.js-motion .hero__name .char {
     letter-spacing: 0.01em;
   }
 
-  .hero__meta .type-meta-secondary {
+  .hero__meta .type-meta-second`ary {
     font-size: var(--text-meta-secondary-mobile);
   }
 }
