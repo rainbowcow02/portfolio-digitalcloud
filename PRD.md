@@ -157,7 +157,7 @@ portfolio-digitalcloud/
 │   ├── base.css
 │   └── sections/
 │       ├── nav.css
-│       ├── hero.css          # pending
+│       ├── hero.css
 │       ├── work.css          # pending
 │       ├── side-quests.css   # pending
 │       ├── values.css        # pending
@@ -186,7 +186,7 @@ Build **section by section**. Do not advance until the current section passes ve
 | **M0** | Plan + token/architecture approval | ✅ Done | Stack, colors, spacing, game/sound decisions locked |
 | **M1** | Design tokens + base + typography | ✅ Done | `tokens.css`, `typography.css`, `base.css` |
 | **M2** | Nav | ✅ Done | Sticky header; desktop links; mobile hamburger→X morph; L→R drawer open / R→L close; parallel content fade on close; sound UI only; Resume URL; drawer covers sound (no sound fade) |
-| **M3** | Hero | ⬜ Next | Avatar, bio + lilac company links, Display-1, meta, flowers, page border |
+| **M3** | Hero | ✅ Done | Avatar, bio + lilac company links, Display-1, meta, flowers, page border |
 | **M4** | Work grid | ⬜ Pending | Section header + project blocks; image placeholders; responsive stacking |
 | **M5** | Side quests | ⬜ Pending | 3 cards; snow background; flowers |
 | **M6** | Design values | ⬜ Pending | 2-col → stack; all 6 values; star icons |
@@ -251,7 +251,8 @@ Stop: `Ctrl+C` in the terminal where the server is running.
 | 2026-07-13 | Tokens + nav scaffolded; sticky + GSAP circular reveal → L→R drawer; hamburger→X morph; sound UI; Resume link |
 | 2026-07-13 | Close: parallel content fade; removed menu “Based in NYC”; drawer covers sound without sound fade animation |
 | 2026-07-13 | PRD authored |
+| 2026-07-13 | M3 Hero: avatar + bio, lilac company underlines, Display-1, meta pairs, flower decor, mauve page border; responsive stack |
 
 ---
 
-*Next up: **M3 — Hero**.*
+*Next up: **M4 — Work grid**.*

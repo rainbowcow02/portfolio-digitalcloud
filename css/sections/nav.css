@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: space-between;
   min-height: var(--header-height);
-  padding: var(--space-6) var(--space-9) var(--space-3);
+  padding: var(--space-8) var(--space-9) var(--space-3);
   background-color: transparent;
   transition:
     background-color var(--duration-med) var(--ease-out),
@@ -265,7 +265,7 @@ body.is-nav-open {
 
 @media (max-width: 767px) {
   .site-header {
-    padding: var(--space-6) var(--space-8) var(--space-3) var(--space-6);
+    padding: var(--space-8) var(--space-8) var(--space-3) var(--space-6);
   }
 
   .site-header__menu-toggle {

@@ -83,6 +83,7 @@
 
 @media (max-width: 767px) {
   .type-display-1 {
+    font-size: 3.75rem; /* 60px — Figma Display-Mobile */
     letter-spacing: var(--tracking-display-1-mobile);
   }
 }

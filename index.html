@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="css/typography.css" />
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/sections/nav.css" />
+    <link rel="stylesheet" href="css/sections/hero.css" />
   </head>
   <body>
     <header class="site-header" data-site-header>
@@ -113,9 +114,121 @@
     </div>
 
     <main>
-      <div class="page-spacer" aria-hidden="true">
-        <p class="type-meta-secondary">Nav verification spacer — scroll to test sticky header.</p>
-      </div>
+      <section class="hero" id="about" aria-label="Introduction">
+        <div class="hero__border" aria-hidden="true"></div>
+
+        <img
+          class="flower-decor flower-decor--header"
+          src="assets/flower-header.png"
+          alt=""
+          width="655"
+          height="656"
+          decoding="async"
+        />
+        <img
+          class="flower-decor flower-decor--mobile-a"
+          src="assets/flower-snapshots.png"
+          alt=""
+          width="333"
+          height="122"
+          decoding="async"
+        />
+        <img
+          class="flower-decor flower-decor--mobile-b"
+          src="assets/flower-side.png"
+          alt=""
+          width="355"
+          height="130"
+          decoding="async"
+        />
+        <img
+          class="flower-decor flower-decor--mobile-c"
+          src="assets/flower-values.png"
+          alt=""
+          width="260"
+          height="100"
+          decoding="async"
+        />
+
+        <div class="hero__inner">
+          <div class="hero__intro">
+            <div class="hero__avatar">
+              <img
+                class="hero__avatar-img"
+                src="assets/Avatar.png"
+                alt="Illustrated portrait of Lindsay Lee"
+                width="144"
+                height="144"
+              />
+            </div>
+
+            <div class="hero__bio">
+              <p class="hero__tagline">
+                I’m a product designer who crafts simple tools for a complex
+                world.
+              </p>
+              <div class="hero__copy">
+                <p>
+                  Over 6.5+ years, I’ve shaped products at
+                  <a class="company-link" href="#work">DoorDash</a>,
+                  <a class="company-link" href="#work">Apple</a>,
+                  <a class="company-link" href="#work">Fleetsmith</a>,
+                  <a class="company-link" href="#work">Massdrop</a>, and other
+                  startups. I'm drawn to the problems most people overlook and
+                  making tools that feel effortless and crafted with care—with a
+                  hint of play.
+                </p>
+                <p>
+                  Outside of work, I find the same satisfaction in a perfectly
+                  dialed in light roast pour over.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero__masthead">
+            <h1 class="hero__name type-display-1">Lindsay Lee</h1>
+
+            <div class="hero__meta">
+              <a class="meta-pair meta-pair--scroll" href="#work">
+                <svg
+                  class="meta-pair__arrow"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 30 30"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path
+                    d="M15.9375 3.75H14.0625V18.75H15.9375V3.75ZM14.0625 15H12.1875V16.875H14.0625V15ZM12.1875 13.125H10.3125V15H12.1875V13.125ZM15.9375 15H17.8125V16.875H15.9375V15Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M12.1875 13.125H19.6875V15H12.1875V13.125Z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <span class="meta-pair__text">
+                  <span class="type-meta-primary">Scroll for my work</span>
+                  <span class="type-meta-secondary"
+                    >Reach out for full details</span
+                  >
+                </span>
+              </a>
+
+              <div class="meta-pair">
+                <span class="type-meta-primary">Based in NYC</span>
+                <span class="type-meta-secondary">40.7128, -74.0060</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Temporary spacer until M4 Work lands — keeps sticky nav testable -->
+      <div class="page-spacer" id="work" aria-hidden="true"></div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>

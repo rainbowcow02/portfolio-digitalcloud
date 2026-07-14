@@ -65,7 +65,8 @@
   --font-mono: "IBM Plex Mono", monospace;
 
   /* ——— Type sizes (desktop defaults; fluid where noted) ——— */
-  --text-display-1: clamp(3.75rem, 2.5rem + 8vw, 11.25rem); /* 60 → 180 */
+  /* 60 at mobile (≤390–767), scales to 180 by ~1440 */
+  --text-display-1: clamp(3.75rem, 0.35rem + 10.5vw, 11.25rem);
   --text-display-2: clamp(6rem, 4rem + 6vw, 9.375rem); /* 96 → 150 */
   --text-lrg: 2.25rem; /* 36 */
   --text-sm: 1.1875rem; /* 19 */
