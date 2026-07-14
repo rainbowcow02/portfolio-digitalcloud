@@ -26,18 +26,19 @@
 }
 
 .site-header.is-nav-open {
-  /* Drop stacking context so the drawer can cover sound,
-     while the menu toggle (z-index 210) stays above the drawer */
-  z-index: auto;
+  z-index: 210;
   background-color: transparent;
   box-shadow: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
 
+.site-header.is-nav-open .site-header__end {
+  visibility: hidden;
+}
+
 .site-header.is-nav-open .site-header__menu-toggle {
   position: relative;
-  z-index: 210;
 }
 
 .site-header__start,

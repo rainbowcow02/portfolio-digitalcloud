@@ -5,7 +5,6 @@
   isolation: isolate;
   min-height: 100vh;
   min-height: 100dvh;
-  overflow: clip;
   background-color: var(--color-bg);
 }
 
@@ -28,19 +27,13 @@
 }
 
 .flower-decor--header {
-  top: clamp(280px, 42vh, 460px);
-  right: clamp(-180px, -8vw, -40px);
-  width: min(655px, 52vw);
+  bottom: 0;
+  right: -5%;
+  width: min(600px, 52vw);
   height: auto;
-  transform: rotate(-5deg);
+  transform: translateY(50%) rotate(-5deg);
   mix-blend-mode: multiply;
   opacity: 0.95;
-}
-
-.flower-decor--mobile-a,
-.flower-decor--mobile-b,
-.flower-decor--mobile-c {
-  display: none;
 }
 
 .hero__inner {
@@ -198,41 +191,9 @@
 
 @media (max-width: 767px) {
   .flower-decor--header {
-    display: none;
-  }
-
-  .flower-decor--mobile-a,
-  .flower-decor--mobile-b,
-  .flower-decor--mobile-c {
-    display: block;
-  }
-
-  .flower-decor--mobile-a {
-    top: 10%;
-    right: -18%;
-    width: 46vw;
-    max-width: 180px;
-    transform: rotate(-5deg);
-    mix-blend-mode: multiply;
-    opacity: 0.9;
-  }
-
-  .flower-decor--mobile-b {
-    top: 18%;
-    left: -8%;
-    width: 32vw;
-    max-width: 120px;
-    transform: rotate(3deg);
-    opacity: 0.85;
-  }
-
-  .flower-decor--mobile-c {
-    top: 42%;
-    right: -6%;
-    width: 34vw;
-    max-width: 130px;
-    transform: rotate(3deg);
-    opacity: 0.8;
+    right: -9%;
+    width: clamp(260px, 70vw, 340px);
+    transform: translateY(38%) rotate(-5deg);
   }
 
   .hero__inner {
