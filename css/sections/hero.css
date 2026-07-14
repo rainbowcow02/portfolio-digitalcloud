@@ -125,15 +125,14 @@ body.is-nav-open .hero__border {
   margin-left: calc(90px - var(--page-inset));
 }
 
-/* Entrance-only stage for the avatar. Exists purely so GSAP has a transform to own:
-   the pop overshoots past its resting position, and if it drove .hero__avatar the
+/* Entrance-only stage for the disc. Exists purely so GSAP has a transform to own:
+   the disc scales in past its resting size, and if that drove .hero__avatar the
    inline transform it leaves behind would permanently outrank the :hover rule below. */
 .hero__avatar-pop {
   flex-shrink: 0;
 }
 
-/* Hovering cycles the pose (js/motion.js swaps the img src). The tilt and scale give
-   the container life the instant the cursor lands, before the first pose swap. */
+/* The disc is a porthole, not a frame: overflow:hidden is what she pops up out of. */
 .hero__avatar {
   position: relative;
   flex-shrink: 0;
@@ -151,11 +150,21 @@ body.is-nav-open .hero__border {
   transform: scale(var(--avatar-hover-scale)) rotate(var(--avatar-hover-tilt));
 }
 
+/* GSAP owns this element's transform during the pop, so she can't be centered with a
+   translateX(-50%) it would overwrite — the negative margin does it in the box model
+   instead. */
+.hero__avatar-figure {
+  position: absolute;
+  left: 50%;
+  top: var(--avatar-figure-top);
+  width: var(--avatar-figure-width);
+  margin-left: calc(var(--avatar-figure-width) / -2);
+}
+
 .hero__avatar-img {
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 20%;
+  height: auto;
 }
 
 .hero__bio {

@@ -148,21 +148,22 @@
 
         <div class="hero__inner">
           <div class="hero__intro">
-            <!-- The entrance pop lives on this wrapper, not on .hero__avatar and not
-                 on the img: GSAP leaves an inline transform behind, which would
-                 outrank the container's :hover transform, and the container's
-                 circular overflow:hidden would clip an img that moved inside it. -->
+            <!-- Three transform surfaces, none of them shared: GSAP scales the disc in
+                 on -pop (an inline transform on .hero__avatar itself would outrank its
+                 :hover rule), and she pops up on -figure, whose travel is clipped by the
+                 disc's circular overflow:hidden — that clip is the porthole effect. -->
             <div class="hero__avatar-pop" data-hero-reveal="avatar">
-              <!-- data-poses drives the hover cycle in js/motion.js. Add a pose by
-                   appending its path here — no JS change needed. -->
-              <div class="hero__avatar" data-poses="assets/Avatar.png">
-                <img
-                  class="hero__avatar-img"
-                  src="assets/Avatar.png"
-                  alt="Illustrated portrait of Lindsay Lee"
-                  width="144"
-                  height="144"
-                />
+              <div class="hero__avatar">
+                <div class="hero__avatar-figure" data-hero-reveal="avatar-figure">
+                  <img
+                    class="hero__avatar-img"
+                    src="assets/avatar-full.png"
+                    srcset="assets/avatar-full.png 1x, assets/avatar-full-2x.png 2x"
+                    alt="Illustrated portrait of Lindsay Lee"
+                    width="144"
+                    height="350"
+                  />
+                </div>
               </div>
             </div>
 

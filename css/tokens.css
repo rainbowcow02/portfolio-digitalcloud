@@ -170,6 +170,12 @@
   --avatar-hover-scale: 1.03;
   --avatar-hover-tilt: -1.5deg;
 
+  /* The cutout inside the disc, sized and placed against the disc's own box so the
+     96px mobile disc needs no override. She's taller than the disc — the width lands
+     her head inside the rim, and the disc clips her legs. */
+  --avatar-figure-width: 74%;
+  --avatar-figure-top: 14%;
+
   /* Headroom the hero name's per-word mask adds below the baseline so the
      descender in "Lindsay" isn't clipped. Also the letters' start offset. */
   --name-mask-pad: 0.18em;

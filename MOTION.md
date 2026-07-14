@@ -1,12 +1,13 @@
 # Motion & microinteraction plan
 
-Status: **built and verified**, except the avatar poses. §6 (header retraction) was added after the original M9 scope and is also built and verified.
+Status: **built and verified**, except the avatar poses. §6 (header retraction) was added after the original M9 scope and is also built and verified. The hero avatar is now a cutout popping out of a disc (§1), not a flat circular portrait.
 
-**Outstanding: 3–4 avatar pose PNGs** at the same 215×215 crop as `assets/Avatar.png`.
-The cycling machinery is live and asset-agnostic — it reads `data-poses` on
-`.hero__avatar` in `index.html`, which currently lists only the base pose (so hovering
-does nothing but tilt). Drop the files into `assets/` and append their paths to that
-attribute; no JS change needed.
+**Outstanding: 3–4 avatar pose PNGs** — now as **transparent-background cutouts at the
+144×350 crop** of `assets/avatar-full.png` (each with a 2× variant), not the old
+circle-baked 215×215 square. The cycling machinery (`initAvatarPoses`) is still there and
+still asset-agnostic, but it's dormant: `data-poses` came off `.hero__avatar` when the
+cutout landed. Re-adding it isn't quite enough on its own — the hero img carries a
+`srcset` now, which outranks the `src` the swap writes, so the swap has to set both.
 
 ## Context
 
@@ -66,7 +67,8 @@ Time-based, not scroll-based — a scroll trigger at the top of the page may nev
 
 | At | Element | Motion |
 |---|---|---|
-| 0.15s | avatar | pops up: y 38px→0 + scale 0.92→1, `back.out(1.9)` 0.95s, overshooting ~5px above its resting spot. A separate 0.22s linear fade — she's opaque a quarter of the way up, so the entrance reads as movement rather than a dissolve |
+| 0.15s | avatar disc | the *empty* lavender disc pops in: scale 0.4→1, `back.out(2.4)` 0.45s. A separate 0.24s linear fade — carried by the back ease, the fade would read as the dissolve we're trying to get away from |
+| 0.60s | avatar figure | she jumps up out of the disc: yPercent 62→0, `back.out(1.7)` 0.42s. No fade at all — she starts below the disc's bottom edge, clipped out of sight, so there's nothing to dissolve |
 | 0.30s | tagline | y 12px→0 + fade |
 | 0.42s | bio paragraphs | 80ms stagger |
 | 0.75s | **"Lindsay Lee"** | letters clip up from a per-word mask, 35ms stagger, `power3.out` 0.9s |
@@ -75,7 +77,17 @@ Time-based, not scroll-based — a scroll trigger at the top of the page may nev
 
 Mark the non-name elements `data-hero-reveal`; drive the whole thing from one GSAP timeline.
 
-The avatar's `data-hero-reveal` sits on a `.hero__avatar-pop` wrapper, not on `.hero__avatar` or its img. Both alternatives are dead ends: GSAP leaves an inline transform behind, which would permanently outrank the container's `:hover` scale/tilt (and its 320ms CSS transition would smear every frame GSAP wrote), while an img moving *inside* the container would be clipped by its circular `overflow: hidden`. The wrapper is a transform surface nothing else claims.
+**The avatar is two elements popping in sequence, not one image arriving** — the Animaniacs gag. `.hero__avatar` is a porthole: a lavender disc with `overflow: hidden`, holding a transparent-background full-body cutout (`assets/avatar-full.png`, 144×350) that is taller than the disc and clipped by it at the thighs. The disc pops in empty, holds ~0.15s, and she jumps up through its bottom edge. **That hold is the joke** — collapse it and the two beats read as one blurry motion.
+
+Each beat is one overshoot and nothing else. An earlier cut added a damped rotation wobble on her landing, and it was too much: the hero already has the tagline, three bio paragraphs, the name split, and the meta row all arriving inside the same two seconds, and she's the only element moving in two dimensions. A flourish on top made her compete with the name for the payoff. Snap in, settle, stop.
+
+Three nested elements, three transform surfaces, none of them shared:
+
+- `.hero__avatar-pop` (`data-hero-reveal="avatar"`) — GSAP scales the disc in here, not on `.hero__avatar` itself, because the inline transform GSAP leaves behind would permanently outrank the container's `:hover` scale/tilt (and its 320ms CSS transition would smear every frame GSAP wrote).
+- `.hero__avatar` — the disc: circle, background, clip, `:hover`. Untouched by GSAP.
+- `.hero__avatar-figure` (`data-hero-reveal="avatar-figure"`) — the cutout's surface. It's centered with a negative margin rather than `translateX(-50%)`, since GSAP owns its `transform` during the pop and would overwrite it. If a rotation ever comes back here, set a `transform-origin` first: the default pivot is her center, and her feet — the other obvious choice — hang well below the disc, so rotating about either swings her head *sideways across the porthole* rather than tilting it. The pivot has to sit near the rim, around her hips.
+
+Note that this inverts the constraint the previous version of this section called a dead end: an img moving *inside* the container gets clipped by its circular `overflow: hidden`. That clip is now the whole effect.
 
 ### Splitting the h1
 
