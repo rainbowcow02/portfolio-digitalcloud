@@ -23,6 +23,16 @@ Scope decisions made up front:
 
 Non-negotiable: `prefers-reduced-motion` is honored, and **the page is never blank if JavaScript fails.**
 
+### Reduced motion exception — Catch the stars (M8)
+
+A game is user-initiated motion, which is the standard exception to the reduced-motion rule. Refusing to move the stars would mean no game. So:
+
+- **Gameplay motion stays** after the user presses start: falling stars and player movement.
+- **Decorative motion gates off** under `prefers-reduced-motion: reduce`: catch sparkles, star rotation, squash, score bump, idle hover on the start card.
+- **Nothing on the stage moves until start is pressed.**
+
+This is a judgment call — logged here so the next reader doesn't "fix" it back to a frozen card.
+
 ---
 
 ## Architecture

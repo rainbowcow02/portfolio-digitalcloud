@@ -1,30 +1,282 @@
-/* ——— Game: catch the stars (placeholder — no game wired up yet) ——— */
+/* ——— Game: catch the stars ——— */
 
-/* sits inside the footer's snow panel, between the contact row and the legal row */
+/* the game is the right-hand column of the footer's contact row: it caps at Figma's
+   725px and stretches back up to the height of the CTA stack beside it */
 .game {
-  width: 100%;
-  max-width: 1296px; /* Figma 1440 − 72px gutters, matching the footer rows */
-  margin: 0 auto;
-  padding: var(--space-3) var(--page-inset);
+  flex: 0 1 725px;
+  align-self: stretch;
+  min-width: 0;
 }
 
-/* the stage is where the game will mount at M8; for now it only holds the prompt */
+/* the stage is the play field's box: scenery, canvas, HUD, and overlays all layer
+   against this */
 .game__stage {
+  position: relative;
+  height: 100%;
+  min-height: 320px;
+  background-color: var(--color-bg);
+  border: 5px solid var(--peach);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+/* ——— Scenery (playing + over) ——— */
+
+.game__scenery {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.game__stage[data-game-state="playing"] .game__scenery,
+.game__stage[data-game-state="over"] .game__scenery {
+  opacity: 1;
+  visibility: visible;
+}
+
+.game__cloud {
+  position: absolute;
+  object-fit: cover;
+  user-select: none;
+}
+
+/* positions mirror Figma’s ~620×382 play field as percentages so they hold on
+   both a 390 phone and a wide desktop stage */
+.game__cloud--values {
+  top: 15%;
+  left: 5%;
+  width: 18.7%;
+  max-width: 116px;
+  height: auto;
+}
+
+.game__cloud--side {
+  top: 18%;
+  right: 4%;
+  left: auto;
+  width: 26%;
+  max-width: 162px;
+  height: auto;
+}
+
+.game__cloud--projects {
+  left: -2%;
+  bottom: -8%;
+  width: 28%;
+  max-width: 162px;
+  height: auto;
+  transform: rotate(-32deg);
+}
+
+.game__cloud--header {
+  right: -2%;
+  bottom: -14%;
+  left: auto;
+  width: 28%;
+  max-width: 160px;
+  height: auto;
+  transform: rotate(167deg);
+}
+
+.game__ground {
+  position: absolute;
+  left: -5px;
+  right: -5px;
+  bottom: 0;
+  height: var(--space-5); /* 20 ≈ Figma’s 19px peach floor */
+  background-color: var(--peach);
+}
+
+/* Out of flow on purpose. In flow, `height: 100%` has no definite parent height to
+   resolve against on mobile — the stage is sized by its min-height there — and the
+   canvas collapses to its intrinsic 300×150, losing most of the field. Absolutely
+   positioned, the percentages resolve against the stage's *used* height instead, which
+   is always definite. Cap at 640px and centre so a wide desktop doesn't become an
+   easier (wider) game than a phone. */
+.game__canvas {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  z-index: 1;
+  transform: translateX(-50%);
+  display: block;
+  width: min(100%, 640px);
+  height: 100%;
+  /* Stage overflow:hidden clips the page focus ring to left/right bars — kill it here.
+     Keyboard users still land in the game; the start control carries the visible ring. */
+  outline: none;
+  box-shadow: none;
+}
+
+.game__canvas:focus,
+.game__canvas:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+/* only while playing: a drag has to steer mini-me, not scroll the page past her */
+.game__stage[data-game-state="playing"] .game__canvas {
+  cursor: none;
+  touch-action: none;
+}
+
+/* ——— Sound (playing + over), pinned top-left ——— */
+
+.game__sound {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  z-index: 4;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.game__stage[data-game-state="playing"] .game__sound,
+.game__stage[data-game-state="over"] .game__sound {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* ——— HUD: Score + Best, pinned top-right ——— */
+
+.game__hud {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  z-index: 4;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-8); /* Figma 30 → nearest token */
+  pointer-events: none;
+}
+
+.game__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  text-align: center;
+  min-width: 2.5em;
+}
+
+.game__stat-label {
+  color: var(--color-text-secondary);
+}
+
+.game__stat-value {
+  color: var(--color-text-primary);
+  display: inline-block; /* so the catch bump can scale without reflowing the line */
+  transform-origin: center bottom;
+}
+
+/* ——— In-play cue ——— */
+
+.game__play-hint {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  max-width: calc(100% - var(--space-12));
+  pointer-events: none;
+}
+
+.game__play-hint[hidden] {
+  display: none;
+}
+
+.game__play-hint-title,
+.game__play-hint-sub {
+  margin: 0;
+}
+
+/* ——— Idle / game-over overlay ——— */
+
+/* the overlay covers the whole stage and *is* the start control, so "click … to play" is
+   literally true and space activates it natively — no global key handler to steal space
+   from the reader's scroll */
+.game__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
+.game__stage[data-game-state="playing"] .game__overlay {
+  display: none;
+}
+
+.game__start {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-4);
-  height: 287px;
-  padding: 0 var(--space-6);
+  gap: var(--space-6);
+  width: 100%;
+  height: 100%;
+  padding: var(--space-6);
   background-color: var(--color-bg);
-  border: 5px solid var(--color-bg);
+  border: 0;
   border-radius: var(--radius-sm);
+  font: inherit;
+  color: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* over: translucent scrim so score / best / scenery stay readable underneath */
+.game__stage[data-game-state="over"] .game__start {
+  gap: var(--space-2);
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+/* pull the focus ring inside the card so overflow:hidden doesn't clip it into side bars */
+.game__start:focus-visible {
+  outline-offset: -6px;
+  box-shadow: inset 0 0 0 4px var(--color-focus-ring);
 }
 
 .game__prompt {
   margin: 0;
-  text-align: center;
+  max-width: 18em;
+}
+
+.game__hint {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.game__hint:empty {
+  display: none;
+}
+
+.game__idle-figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 68px;
+}
+
+.game__stage[data-game-state="over"] .game__idle-figure {
+  display: none;
+}
+
+.game__star {
+  width: 23px;
+  height: 23px;
+  object-fit: cover;
+  user-select: none;
 }
 
 .game__avatar {
@@ -34,4 +286,74 @@
   /* the mini-me is pixel art — keep the edges crisp when it scales */
   image-rendering: pixelated;
   user-select: none;
+  transition: transform var(--duration-med) var(--ease-out);
+}
+
+/* she perks up toward the stars she's about to chase */
+.game__stage[data-game-state="idle"] .game__start:hover .game__avatar {
+  transform: translateY(-4px) rotate(-2deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game__stage[data-game-state="idle"] .game__start:hover .game__avatar {
+    transform: none;
+  }
+}
+
+/* ——— Mobile ≤767px ——— */
+
+@media (max-width: 767px) {
+  /* Stacked under the CTA, and bled back out through the page gutter to just inside the
+     frame. A falling-object game is only as good as the field it falls through, and the
+     inset column left mini-me barely 290px to run in. --space-2 of the gutter is kept so
+     the card's peach border doesn't kiss the page frame. */
+  .game {
+    flex: 0 0 auto;
+    width: calc(100% + (var(--page-gutter) - var(--space-2)) * 2);
+    margin-inline: calc((var(--page-gutter) - var(--space-2)) * -1);
+    align-self: stretch;
+  }
+
+  /* taller as well — the extra fall distance is what makes the wider field worth having */
+  .game__stage {
+    min-height: 380px;
+  }
+
+  /* pin HUD corners; shrink clouds so they don’t crowd the field */
+  .game__sound {
+    top: var(--space-3);
+    left: var(--space-3);
+  }
+
+  .game__hud {
+    top: var(--space-3);
+    right: var(--space-3);
+    gap: var(--space-6);
+  }
+
+  .game__cloud--values {
+    width: 22%;
+    max-width: 88px;
+  }
+
+  .game__cloud--side {
+    width: 30%;
+    max-width: 110px;
+  }
+
+  .game__cloud--projects {
+    width: 34%;
+    max-width: 120px;
+    bottom: -6%;
+  }
+
+  .game__cloud--header {
+    width: 34%;
+    max-width: 120px;
+    bottom: -10%;
+  }
+
+  .game__play-hint {
+    max-width: calc(100% - var(--space-8));
+  }
 }
