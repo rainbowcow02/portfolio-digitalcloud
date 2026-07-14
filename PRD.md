@@ -211,14 +211,22 @@ Build **section by section**. Do not advance until the current section passes ve
 
 ## 9. Local development
 
+**Recommended** — run once in your own terminal and leave it open:
+
 ```bash
 cd "/Users/lindsaylee/Documents/Side Projects/portfolio-digitalcloud"
-python3 -m http.server 8765
+npm install   # first time only
+npm run dev
 ```
 
 Open: http://127.0.0.1:8765/  
-Stop: `Ctrl+C`  
-Free port if needed: `lsof -ti:8765 | xargs kill -9`
+`npm run dev` uses **live-server** (auto-reload on save). Use `npm start` for a plain static server without reload.
+
+Stop: `Ctrl+C` in the terminal where the server is running.
+
+**Fallback** (no Node): `python3 -m http.server 8765`
+
+**Avoid** killing port 8765 while developing — that stops whichever server you started. Only free the port if something is stuck: `lsof -ti:8765 | xargs kill -9`
 
 ---
 
