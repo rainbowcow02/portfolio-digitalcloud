@@ -124,9 +124,31 @@
 
   /* ——— Motion ——— */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  /* A gentle, near-symmetric glide. --ease-out is an expo curve: it bolts off the line and
+     decelerates hard, which is exactly right at --duration-fast but reads as "darts, then
+     hangs" once a move runs long. Anything unhurried wants a softer ramp at both ends. */
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
   --duration-fast: 180ms;
   --duration-med: 320ms;
   --duration-slow: 700ms;
+
+  /* The header's retraction. Deliberately unhurried — this is ambient chrome getting out
+     of the reader's way, and it should never feel like it's snatching itself off-screen.
+     The exit is the lazier of the two; the return is a shade quicker because it answers a
+     scroll the reader just made, but both are a long way from urgent.
+
+     --duration-chrome-fade is the one to tune first. It, NOT --duration-chrome-out, is the
+     number the eye actually times: the header fades to nothing while it is only ~60% of the
+     way through its slide, so the rest of that slide is never seen. Keep the fade at roughly
+     60% of the slide — push it much closer and you start *watching* the header labour
+     off-screen, which reads as sluggish rather than relaxed.
+
+     These are the desktop values. Mobile keeps its own, quicker set at the bottom of this
+     file: a touch fling keeps content ripping past, which camouflages the dissolve, so the
+     same timings that feel languid on a mouse wheel feel sleepy under a thumb. */
+  --duration-chrome-out: 900ms;
+  --duration-chrome-fade: 560ms;
+  --duration-chrome-in: 640ms;
 
   /* Link highlighter: the resting underline swells to a marker stroke on hover.
      Drawer links are display-size, so they thicken as a bar instead of filling.
@@ -158,5 +180,15 @@
 @media (max-width: 767px) {
   :root {
     --header-height: 76px;
+
+    /* The header retracts noticeably quicker under a thumb than under a mouse wheel, and
+       it has to. A touch fling keeps the content ripping past while the header dissolves,
+       so the movement is camouflaged and reads as subtle. A wheel notch teleports the page
+       and stops dead, leaving the identical dissolve fully exposed against a static
+       backdrop — where it looks hurried. Same motion, different exposure; hence two sets of
+       numbers rather than one compromise that suits neither. */
+    --duration-chrome-out: 620ms;
+    --duration-chrome-fade: 320ms;
+    --duration-chrome-in: 440ms;
   }
 }

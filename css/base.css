@@ -9,6 +9,13 @@ html {
   scroll-behavior: smooth;
   /* clip, not hidden: keeps the sticky header working */
   overflow-x: clip;
+  /* The header is fixed and the frame paints over the top of it, so an anchor target lands
+     under both without this. --header-h is measured onto :root by js/nav.js; the token is
+     only a fallback, and it is short of the real box in both directions — 64px against a
+     rendered 74px on desktop, and it can't see --safe-top at all. */
+  scroll-padding-top: calc(
+    var(--header-h, var(--header-height)) + var(--page-border-width) + var(--space-4)
+  );
   /* The canvas — everything <body> doesn't cover — carries the frame gradient rather
      than white: the rubber-band overscroll at either end of the page, and the safe-area
      bands mobile browsers fill from the root background. Reads as the frame painting
