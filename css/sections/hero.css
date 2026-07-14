@@ -219,15 +219,18 @@ body.is-nav-open .hero__border {
   flex-direction: column;
   gap: var(--space-4);
   max-width: 100%;
+  /* the query container the mobile name sizes itself against — see .hero__name below */
+  container-type: inline-size;
 }
 
 .hero__name {
   margin: 0;
   max-width: 100%;
-  /* Note: this stops working once js/motion.js splits the name into per-word
-     inline-blocks — atomic inlines offer no break opportunity inside a word. The
-     splitter measures for overflow afterwards and reverts to plain text if
-     "Lindsay" no longer fits, which restores this rule. */
+  /* Desktop only: the name is free to wrap. Note this stops working once js/motion.js
+     splits the name into per-word inline-blocks — atomic inlines offer no break
+     opportunity inside a word. The splitter measures for overflow afterwards and
+     reverts to plain text if "Lindsay" no longer fits, which restores this rule.
+     (Mobile takes the opposite approach: it forbids wrapping and shrinks to fit.) */
   overflow-wrap: anywhere;
 }
 
@@ -308,9 +311,11 @@ html.js-motion .hero__name .char {
     --drift: 40px;
   }
 
+  /* Everything from here to .hero__name is a vertical budget: the masthead only clears
+     the fold on a ~745px-tall phone if the intro above it stays under ~420px. */
   .hero__inner {
     padding:
-      calc(var(--header-height) + var(--space-10))
+      calc(var(--header-height) + var(--space-6))
       var(--page-inset)
       var(--space-10);
     gap: var(--space-6);
@@ -318,22 +323,29 @@ html.js-motion .hero__name .char {
 
   .hero__intro {
     flex-direction: column;
-    gap: var(--space-9);
+    gap: var(--space-6);
     width: 100%;
     margin-left: 0;
   }
 
   .hero__avatar {
-    width: 112px;
-    height: 112px;
+    width: 96px;
+    height: 96px;
     box-shadow: none;
   }
 
+  /* No left indent here: it would cut the copy measure from 297px to 249px, which costs
+     the bio roughly two extra lines — the single largest reason the name fell below the
+     fold. The bio runs full-bleed to the page inset instead. */
   .hero__bio {
     padding-top: 0;
-    padding-left: var(--space-12);
     max-width: none;
     width: 100%;
+  }
+
+  .hero__copy p {
+    font-size: var(--text-body-mobile);
+    line-height: 1.45;
   }
 
   .hero__tagline {
@@ -343,14 +355,38 @@ html.js-motion .hero__name .char {
   }
 
   .hero__masthead {
-    gap: var(--space-4);
+    gap: var(--space-3);
+  }
+
+  /* "Lindsay Lee" is one typographic unit on mobile — it must never break across lines.
+     A fixed size can't promise that: in Inclusive Sans 700 at --tracking-display-1-mobile
+     the string measures 5.24em, so the 60px desktop-mobile size wants 314px and a 393px
+     phone only offers 297px between the page insets. That's the wrap.
+
+     So size the name off the masthead's width instead of the viewport's: 19.09cqw fills
+     the measure exactly, and 18.5cqw leaves ~3% of slack. The slack is load-bearing —
+     js/motion.js reverts the per-word split (and with it the letter reveal) if the h1
+     overflows by even a pixel, so an exact fit would be a coin flip against hinting and
+     kerning. Re-derive the constant if the name, the family, or the tracking changes.
+
+     The min() caps growth at the 60px design size, which the name reaches around a 420px
+     viewport. Without it the fill would keep scaling to ~128px at the 767px breakpoint
+     and then snap back down to the desktop ramp's ~86px. */
+  .hero__name {
+    white-space: nowrap;
+    font-size: min(18.5cqw, var(--text-display-1));
+    /* If GSAP never loads, playHeroEntrance() — and its wait on document.fonts — never
+       runs, so the h1 can paint in the fallback sans, which is wider. Clip rather than
+       let that push horizontal scroll on the whole page. x only: the word masks need
+       overflow-y visible for their descender padding. */
+    overflow-x: clip;
   }
 
   .hero__meta {
     width: 100%;
     max-width: 100%;
     justify-content: space-between;
-    gap: var(--space-4);
+    gap: var(--space-2);
     padding-left: 0;
   }
 
@@ -359,8 +395,31 @@ html.js-motion .hero__name .char {
     letter-spacing: 0.01em;
   }
 
-  .hero__meta .type-meta-second`ary {
-    font-size: var(--text-meta-secondary-mobile);
+  /* The two mono lines are one row that must never break — the same shrink-to-fit trick
+     the name uses above, and for the same reason: a fixed size can't promise a fit.
+
+     Both strings are IBM Plex Mono, whose advance is a flat 0.6em, and --tracking-meta
+     takes 0.01em back off each character: 0.59em per char, and 26 + 17 = 43 chars, so
+     the pair costs 25.4em however wide the phone is. Around it sit costs the text can't
+     shrink: the 24px arrow, the --space-1 beside it, and the --space-2 row gap above —
+     36px, rounded up to 40px so the fit is never exact. (It has to be inexact: at 36px
+     the row lands a subpixel over its container at some widths, and an overflow here
+     pans the whole page.) Solving 25.4em + 40px = 100cqw against the masthead container
+     gives the largest size that still holds one line, and min() caps it at the 10px
+     design size, which the row reaches around a 400px viewport.
+
+     That arithmetic is also why a flat 10px wrapped at 393px, though the gap was the
+     nearer cause: the two columns leave only 12.4px between them there, less than the
+     --space-4 the row used to ask for, so flex shrank them until the mono broke.
+
+     Re-derive 25.4 if either string, the family, or the tracking changes. The divisor is
+     a bare number, so both terms must stay inside the parens for the calc to parse. */
+  .hero__meta .type-meta-secondary {
+    white-space: nowrap;
+    font-size: min(
+      var(--text-meta-secondary-mobile),
+      calc((100cqw - 40px) / 25.4)
+    );
   }
 }
 
