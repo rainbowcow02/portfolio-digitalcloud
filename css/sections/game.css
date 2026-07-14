@@ -1,0 +1,37 @@
+/* ——— Game: catch the stars (placeholder — no game wired up yet) ——— */
+
+/* sits inside the footer's snow panel, between the contact row and the legal row */
+.game {
+  width: 100%;
+  max-width: 1296px; /* Figma 1440 − 72px gutters, matching the footer rows */
+  margin: 0 auto;
+  padding: var(--space-3) var(--page-inset);
+}
+
+/* the stage is where the game will mount at M8; for now it only holds the prompt */
+.game__stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  height: 287px;
+  padding: 0 var(--space-6);
+  background-color: var(--color-bg);
+  border: 5px solid var(--color-bg);
+  border-radius: var(--radius-sm);
+}
+
+.game__prompt {
+  margin: 0;
+  text-align: center;
+}
+
+.game__avatar {
+  width: 68px;
+  height: 82px;
+  object-fit: cover;
+  /* the mini-me is pixel art — keep the edges crisp when it scales */
+  image-rendering: pixelated;
+  user-select: none;
+}

@@ -1,0 +1,202 @@
+/* ——— Footer: thank you + contact + legal row ——— */
+
+.site-footer {
+  background-color: var(--color-bg-alt);
+}
+
+/* ——— Contact row ——— */
+
+/* flex-end: the contact column sits on the baseline of "you", not centred on the
+   whole thanks block */
+.site-footer__contact {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-16);
+  width: 100%;
+  max-width: 1296px; /* Figma 1440 − 72px gutters */
+  margin: 0 auto;
+  padding: var(--space-20) var(--page-inset) var(--space-13); /* Figma 50 → 52 */
+}
+
+/* ——— Thank you ——— */
+
+.site-footer__thanks {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.site-footer__kicker {
+  color: var(--color-text-secondary);
+}
+
+/* the two words are stacked and centred on each other, then rotated in opposite
+   directions and overlapped — em-based so the overlap tracks the fluid font size */
+.site-footer__thankyou {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.site-footer__word {
+  display: block;
+  white-space: nowrap;
+}
+
+.site-footer__word--thank {
+  margin-bottom: -0.5em;
+  transform: rotate(-1.93deg);
+}
+
+.site-footer__word--you {
+  transform: rotate(2.66deg);
+}
+
+/* ——— Get in touch ——— */
+
+/* the column is sized by its widest child (the 360px blurb), not a fixed width */
+.site-footer__contact-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  padding-bottom: var(--space-4);
+  flex: 0 0 auto;
+}
+
+.site-footer__contact-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  text-align: center;
+}
+
+/* Figma drops "Get in touch" to Title/Sm (19) — the markup still carries type-lrg */
+.site-footer__title {
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-sm);
+}
+
+.site-footer__desc {
+  width: 360px;
+  max-width: 100%;
+}
+
+/* ——— SocialIcons ——— */
+
+.site-footer__socials {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Figma's 48px tile is kept as the tap target; the glyph sits centred inside it */
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.social-icon:hover {
+  transform: translateY(-2px);
+}
+
+.social-icon__glyph {
+  width: 28px;
+  height: 28px;
+  fill: currentColor;
+}
+
+/* ——— Legal row ——— */
+
+.site-footer__legal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 1296px;
+  margin: 0 auto;
+  /* extra bottom padding over Figma's 20 so the row isn't flush to the frame */
+  padding: var(--space-5) var(--page-inset) var(--space-9);
+}
+
+.site-footer__legal p {
+  white-space: nowrap;
+}
+
+/* the two lines only fit side by side on mobile with Figma's shortened label */
+.site-footer__updated-short {
+  display: none;
+}
+
+/* ——— Mobile ≤767px ——— */
+
+@media (max-width: 767px) {
+  /* flex-start, not stretch: the thanks column keeps hugging the width of
+     "thank" so the rotated words stay centred on each other, not on the page */
+  .site-footer__contact {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-12);
+    padding: var(--space-20) var(--page-inset) var(--space-10);
+  }
+
+  .site-footer__thanks {
+    gap: var(--space-2);
+  }
+
+  .site-footer__kicker {
+    font-size: var(--text-link); /* 15 per Figma mobile */
+  }
+
+  .site-footer__word--thank {
+    transform: rotate(-2deg);
+  }
+
+  .site-footer__word--you {
+    transform: rotate(2.5deg);
+  }
+
+  .site-footer__contact-col {
+    width: 100%;
+    gap: var(--space-4);
+    padding-bottom: 0;
+  }
+
+  .site-footer__title {
+    font-size: var(--text-lrg-mobile);
+  }
+
+  /* Figma hides the contact blurb on mobile */
+  .site-footer__desc {
+    display: none;
+  }
+
+  .site-footer__legal p {
+    font-size: var(--text-legal-mobile);
+  }
+
+  .site-footer__updated-long {
+    display: none;
+  }
+
+  .site-footer__updated-short {
+    display: inline;
+    font-weight: 500; /* Figma sets the mobile label in Mono Medium */
+  }
+}
