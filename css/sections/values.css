@@ -1,0 +1,116 @@
+/* ——— Design values ——— */
+
+.values {
+  position: relative;
+  isolation: isolate;
+  padding: var(--space-25) var(--page-inset);
+}
+
+.values__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-16);
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+/* Decor — flower sits behind the content, cresting the section's top edge */
+.flower-decor--values {
+  top: calc(-1 * var(--space-10));
+  left: 3%;
+  width: min(260px, 18vw);
+  height: auto;
+  mix-blend-mode: multiply;
+}
+
+/* ——— SectionHeader ——— */
+
+.values__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 320px;
+  flex: 0 0 auto;
+}
+
+.values__title {
+  margin: 0;
+}
+
+.values__desc {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+/* ——— ValueRow list ——— */
+
+.values__list {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 700px;
+  border-top: 1px solid var(--color-border);
+}
+
+.value {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.value__star {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+}
+
+.value__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.value__name,
+.value__desc {
+  margin: 0;
+}
+
+/* ——— Mobile ≤767px ——— */
+
+@media (max-width: 767px) {
+  .values {
+    padding: var(--space-20) var(--page-inset);
+  }
+
+  .values__inner {
+    flex-direction: column;
+    gap: var(--space-10);
+  }
+
+  .flower-decor--values {
+    top: calc(-1 * var(--space-6));
+    left: 36%;
+    width: clamp(150px, 45vw, 180px);
+  }
+
+  .values__header {
+    width: 100%;
+    gap: var(--space-3);
+  }
+
+  .values__list {
+    width: 100%;
+    max-width: none;
+    border-top: 0;
+  }
+
+  .value__desc {
+    font-size: var(--text-body-mobile);
+  }
+}

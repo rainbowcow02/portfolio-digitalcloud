@@ -77,6 +77,7 @@
   --text-sm: 1.1875rem; /* 19 */
   --text-subtitle: 1.125rem; /* 18 */
   --text-body: 1rem; /* 16 */
+  --text-body-mobile: 0.9375rem; /* 15 — value rows on mobile per Figma */
   --text-link: 0.9375rem; /* 15 */
   --text-meta-primary: 0.875rem; /* 14 */
   --text-meta-secondary: 0.8125rem; /* 13 */

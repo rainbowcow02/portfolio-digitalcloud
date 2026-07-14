@@ -97,9 +97,3 @@ p {
   white-space: nowrap;
   border: 0;
 }
-
-/* Temporary spacer until Side quests (M5) lands — keeps sticky nav / scroll target testable */
-.page-spacer {
-  min-height: 80vh;
-  background-color: var(--color-bg);
-}
