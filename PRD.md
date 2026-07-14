@@ -190,10 +190,10 @@ Build **section by section**. Do not advance until the current section passes ve
 | **M4** | Work grid | ✅ Done | Section header + 5 project blocks (3/2/3/1/3 imgs); grey placeholders; images stack on mobile; snapshots + projects flowers |
 | **M5** | Side quests | ✅ Done | Section header + 3 cards (Cupboard, Cute Notes, Cozy Calcifer); snow background; grey placeholders; stacked on mobile; side flower |
 | **M6** | Design values | ✅ Done | Left header + 700px value list; all 6 ValueRows with star icons; stacks on mobile |
-| **M7** | Footer + contact | ✅ Done | thank you, Get in touch, social placeholders, legal row |
+| **M7** | Footer + contact | ✅ Done | thank you, Get in touch, live social links (LinkedIn / GitHub / email), legal row |
 | **M8** | Game (catch the stars) | 🟨 In progress | Placeholder stage built (card + prompt + mini-me). Still to do: mini-me + stars, Space/click to play, simple scoring |
 | **M9** | Polish pass | ⬜ Pending | Focus states audit, reduced motion, console clean, cross-check Figma |
-| **M10** | Content & assets swap | ⬜ Later | Final copy, images, social icons/URLs, optional audio file |
+| **M10** | Content & assets swap | ⬜ Later | Final copy, images, optional audio file |
 | **M11** | Multi-page (optional) | ⬜ Later | About + case studies |
 
 ---
@@ -236,7 +236,6 @@ Stop: `Ctrl+C` in the terminal where the server is running.
 |---|---|
 | Final project descriptions (still `{Project}` placeholders) | Waiting on Lindsay |
 | “Lowest level of detail” value body (`xxx`) | Waiting on Lindsay |
-| Social icon assets + URLs | Waiting on Lindsay |
 | Work / side-quest imagery | Waiting on Lindsay |
 | Ambient audio file for sound toggle | Deferred |
 | Exact catch-the-stars rules (scoring, difficulty) | Decide at M8 |
@@ -258,6 +257,8 @@ Stop: `Ctrl+C` in the terminal where the server is running.
 | 2026-07-14 | M7 Footer: snow panel with “If you’ve made it this far…” kicker + rotated thank / you (Display-2, overlapped with an em-based negative margin so the overlap tracks the fluid size), right-hand Get in touch column (490px) with 3 grey SocialIcon placeholders; legal row (© + updated) in mono. Single `<footer>` wraps contact + legal so the game can slot between them at M8. Mobile: columns stack, blurb hidden per Figma, “Get in touch” drops to 24px, icons 48px |
 | 2026-07-14 | M7 legal row: space-between at both breakpoints per Figma. Only fits on mobile with Figma’s shortened label, so the markup carries both (“Last updated:” at 13px desktop / “Updated:” in Mono Medium at 12px mobile, `--text-legal-mobile`) and swaps them at the breakpoint. Bottom padding raised 20 → 36 so the row isn’t flush to the page frame. Year set to © 2026 (desktop Figma still says 2025) |
 
+| 2026-07-14 | M7 footer synced to the updated Figma (node 63:1488): contact row bottom-aligns its columns, the Get in touch column is sized by its 360px blurb instead of a fixed 490px, gaps tighten (36 → 24, 16 → 8), and “Get in touch” drops to Title/Sm (19) |
+| 2026-07-14 | M7 SocialIcons are real: LinkedIn, GitHub and a mailto, as inline `currentColor` SVGs (no new asset files, sharp at any size) centred in Figma's 48px tile, which is kept as the tap target. Hover lifts 2px; the global `:focus-visible` ring picks up the tile's 8px radius. Grey placeholders retired |
 | 2026-07-14 | M8 (partial) Game placeholder: `#game` section slots between the footer contact row and the legal row, inside the footer's snow panel. White card (287px, 5px white border, 6px radius) centred on “Click or press “space” to play” (Title/Sm) above the 68×82 mini-me. No JS and no game behaviour yet — the prompt is copy, not a control, so the card is not focusable or clickable until the mechanics land |
 
 ---

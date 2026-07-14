@@ -88,19 +88,37 @@
   max-width: 100%;
 }
 
-/* ——— SocialIcon placeholders ——— */
+/* ——— SocialIcons ——— */
 
 .site-footer__socials {
   display: flex;
   align-items: flex-start;
   gap: var(--space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
+/* Figma's 48px tile is kept as the tap target; the glyph sits centred inside it */
 .social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 48px;
   height: 48px;
-  background-color: var(--icon-placeholder);
   border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.social-icon:hover {
+  transform: translateY(-2px);
+}
+
+.social-icon__glyph {
+  width: 28px;
+  height: 28px;
+  fill: currentColor;
 }
 
 /* ——— Legal row ——— */
