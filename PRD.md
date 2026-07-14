@@ -162,7 +162,7 @@ portfolio-digitalcloud/
 │       ├── side-quests.css
 │       ├── values.css
 │       ├── footer.css
-│       └── game.css          # pending
+│       └── game.css
 ├── js/
 │   ├── main.js
 │   ├── nav.js
@@ -191,7 +191,7 @@ Build **section by section**. Do not advance until the current section passes ve
 | **M5** | Side quests | ✅ Done | Section header + 3 cards (Cupboard, Cute Notes, Cozy Calcifer); snow background; grey placeholders; stacked on mobile; side flower |
 | **M6** | Design values | ✅ Done | Left header + 700px value list; all 6 ValueRows with star icons; stacks on mobile |
 | **M7** | Footer + contact | ✅ Done | thank you, Get in touch, social placeholders, legal row |
-| **M8** | Game (catch the stars) | ⬜ Pending | mini-me + stars; Space/click to play; simple scoring |
+| **M8** | Game (catch the stars) | 🟨 In progress | Placeholder stage built (card + prompt + mini-me). Still to do: mini-me + stars, Space/click to play, simple scoring |
 | **M9** | Polish pass | ⬜ Pending | Focus states audit, reduced motion, console clean, cross-check Figma |
 | **M10** | Content & assets swap | ⬜ Later | Final copy, images, social icons/URLs, optional audio file |
 | **M11** | Multi-page (optional) | ⬜ Later | About + case studies |
@@ -258,6 +258,8 @@ Stop: `Ctrl+C` in the terminal where the server is running.
 | 2026-07-14 | M7 Footer: snow panel with “If you’ve made it this far…” kicker + rotated thank / you (Display-2, overlapped with an em-based negative margin so the overlap tracks the fluid size), right-hand Get in touch column (490px) with 3 grey SocialIcon placeholders; legal row (© + updated) in mono. Single `<footer>` wraps contact + legal so the game can slot between them at M8. Mobile: columns stack, blurb hidden per Figma, “Get in touch” drops to 24px, icons 48px |
 | 2026-07-14 | M7 legal row: space-between at both breakpoints per Figma. Only fits on mobile with Figma’s shortened label, so the markup carries both (“Last updated:” at 13px desktop / “Updated:” in Mono Medium at 12px mobile, `--text-legal-mobile`) and swaps them at the breakpoint. Bottom padding raised 20 → 36 so the row isn’t flush to the page frame. Year set to © 2026 (desktop Figma still says 2025) |
 
+| 2026-07-14 | M8 (partial) Game placeholder: `#game` section slots between the footer contact row and the legal row, inside the footer's snow panel. White card (287px, 5px white border, 6px radius) centred on “Click or press “space” to play” (Title/Sm) above the 68×82 mini-me. No JS and no game behaviour yet — the prompt is copy, not a control, so the card is not focusable or clickable until the mechanics land |
+
 ---
 
-*Next up: **M8 — Game (catch the stars)**.*
+*Next up: **M8 — Game mechanics (catch the stars)**.*
