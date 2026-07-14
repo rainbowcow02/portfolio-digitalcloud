@@ -161,7 +161,7 @@ portfolio-digitalcloud/
 │       ├── work.css
 │       ├── side-quests.css
 │       ├── values.css
-│       ├── footer.css        # pending
+│       ├── footer.css
 │       └── game.css          # pending
 ├── js/
 │   ├── main.js
@@ -190,7 +190,7 @@ Build **section by section**. Do not advance until the current section passes ve
 | **M4** | Work grid | ✅ Done | Section header + 5 project blocks (3/2/3/1/3 imgs); grey placeholders; images stack on mobile; snapshots + projects flowers |
 | **M5** | Side quests | ✅ Done | Section header + 3 cards (Cupboard, Cute Notes, Cozy Calcifer); snow background; grey placeholders; stacked on mobile; side flower |
 | **M6** | Design values | ✅ Done | Left header + 700px value list; all 6 ValueRows with star icons; stacks on mobile |
-| **M7** | Footer + contact | ⬜ Pending | thank you, Get in touch, social placeholders, legal row |
+| **M7** | Footer + contact | ✅ Done | thank you, Get in touch, social placeholders, legal row |
 | **M8** | Game (catch the stars) | ⬜ Pending | mini-me + stars; Space/click to play; simple scoring |
 | **M9** | Polish pass | ⬜ Pending | Focus states audit, reduced motion, console clean, cross-check Figma |
 | **M10** | Content & assets swap | ⬜ Later | Final copy, images, social icons/URLs, optional audio file |
@@ -255,7 +255,9 @@ Stop: `Ctrl+C` in the terminal where the server is running.
 | 2026-07-13 | M4 Work: “Snapshots of my work” + 5 ProjectBlocks; flex image rows (3/2/3/1/3) at 383×287 aspect; images stack full-width on mobile; hover lift; snapshots + projects flowers. Work has no background of its own, so the header flower spills past the hero into Work while Work's content still paints over it |
 | 2026-07-13 | M5 Side quests: snow panel; centered header + 650px description; 3 SideQuestCards (Cupboard / Cute Notes / Cozy Calcifer) in a flex row that stacks on mobile; grey image placeholders with hover lift; side flower starts above the section so it spills onto Work's white background. Removed the temporary `.page-spacer` — `#side` is now a real section |
 | 2026-07-13 | M6 Design values: left SectionHeader (320px) + right value list (max 700px) on desktop, stacked on mobile; 6 ValueRows with `icon-star.svg`, hairline rules between rows (top rule desktop-only per Figma); value body drops to 15px on mobile (`--text-body-mobile`); values flower crests the top edge onto the side-quests snow panel |
+| 2026-07-14 | M7 Footer: snow panel with “If you’ve made it this far…” kicker + rotated thank / you (Display-2, overlapped with an em-based negative margin so the overlap tracks the fluid size), right-hand Get in touch column (490px) with 3 grey SocialIcon placeholders; legal row (© + updated) in mono. Single `<footer>` wraps contact + legal so the game can slot between them at M8. Mobile: columns stack, blurb hidden per Figma, “Get in touch” drops to 24px, icons 48px |
+| 2026-07-14 | M7 legal row: space-between at both breakpoints per Figma. Only fits on mobile with Figma’s shortened label, so the markup carries both (“Last updated:” at 13px desktop / “Updated:” in Mono Medium at 12px mobile, `--text-legal-mobile`) and swaps them at the breakpoint. Bottom padding raised 20 → 36 so the row isn’t flush to the page frame. Year set to © 2026 (desktop Figma still says 2025) |
 
 ---
 
-*Next up: **M7 — Footer + contact**.*
+*Next up: **M8 — Game (catch the stars)**.*

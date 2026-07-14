@@ -74,6 +74,7 @@
   --text-display-1: clamp(3.75rem, 0.35rem + 10.5vw, 11.25rem);
   --text-display-2: clamp(6rem, 4rem + 6vw, 9.375rem); /* 96 → 150 */
   --text-lrg: 2.25rem; /* 36 */
+  --text-lrg-mobile: 1.5rem; /* 24 — footer “Get in touch” on mobile per Figma */
   --text-sm: 1.1875rem; /* 19 */
   --text-subtitle: 1.125rem; /* 18 */
   --text-body: 1rem; /* 16 */
@@ -83,6 +84,7 @@
   --text-meta-secondary: 0.8125rem; /* 13 */
   --text-meta-primary-mobile: 0.75rem; /* 12 */
   --text-meta-secondary-mobile: 0.625rem; /* 10 */
+  --text-legal-mobile: 0.75rem; /* 12 — footer legal row on mobile per Figma */
 
   /* ——— Letter-spacing ——— */
   --tracking-display-1: -0.04em;
