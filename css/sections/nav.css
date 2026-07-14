@@ -10,7 +10,9 @@
   align-items: center;
   justify-content: space-between;
   min-height: var(--header-height);
-  padding: var(--space-8) var(--page-inset) var(--space-3);
+  /* the frame's top stroke now bleeds down through the status bar, so the header has
+     to start below the inset or the gradient would paint over the menu/sound buttons */
+  padding: calc(var(--space-8) + var(--safe-top)) var(--page-inset) var(--space-3);
   background-color: transparent;
   transition:
     background-color var(--duration-med) var(--ease-out),

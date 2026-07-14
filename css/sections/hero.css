@@ -15,7 +15,18 @@
   z-index: 220;
   height: 100vh;
   height: 100dvh;
-  border: var(--page-border-width) solid var(--color-page-border);
+  border-style: solid;
+  /* Each side is the frame stroke *plus* that side's safe-area inset, so on a notched
+     phone the gradient keeps painting out to the physical edge — under the status bar,
+     into the rounded corners — instead of leaving a bare white band there. The bottom
+     needs no inset: 100dvh already ends at the browser's usable bottom edge, and grows
+     into the home-indicator area on its own when the toolbar collapses. */
+  border-width:
+    calc(var(--page-border-width) + var(--safe-top))
+    calc(var(--page-border-width) + var(--safe-right))
+    var(--page-border-width)
+    calc(var(--page-border-width) + var(--safe-left));
+  border-color: var(--color-page-border);
   border-image: var(--gradient-page-border) 1;
   pointer-events: none;
 }
@@ -70,7 +81,7 @@ body.is-nav-open .hero__border {
   min-height: 100vh;
   min-height: 100dvh;
   padding:
-    calc(var(--header-height) + var(--space-20))
+    calc(var(--header-height) + var(--space-20) + var(--safe-top))
     var(--page-inset)
     var(--space-10);
 }

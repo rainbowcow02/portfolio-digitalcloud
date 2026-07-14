@@ -9,6 +9,13 @@ html {
   scroll-behavior: smooth;
   /* clip, not hidden: keeps the sticky header working */
   overflow-x: clip;
+  /* The canvas — everything <body> doesn't cover — carries the frame gradient rather
+     than white: the rubber-band overscroll at either end of the page, and the safe-area
+     bands mobile browsers fill from the root background. Reads as the frame painting
+     past the edge of the screen instead of a white seam appearing there. Paired with
+     the <meta name="theme-color"> in index.html, which tints Safari's own bars to match. */
+  background: var(--gradient-page-border) fixed;
+  background-color: var(--color-page-border);
 }
 
 @media (prefers-reduced-motion: reduce) {

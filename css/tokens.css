@@ -101,10 +101,24 @@
   --radius-sm: 6px;
   --radius-md: 8px;
   --page-border-width: 16px;
+
+  /* Safe-area insets (0 everywhere except notched/rounded mobile screens; the page
+     opts into them with viewport-fit=cover). The frame paints *through* these — its
+     stroke grows by the inset on each side so the gradient reaches the physical edge
+     of the screen instead of stopping short of the status bar. Anything that has to
+     stay clear of the frame adds the same inset back. No --safe-bottom: the frame is
+     sized in dvh, which already ends at the browser's own bottom edge. */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+
   /* the page frame is fixed over the viewport edge, so a section's inset has to
      add it back in to leave --page-gutter of air between frame and content */
   --page-gutter: var(--space-8);
-  --page-inset: calc(var(--page-border-width) + var(--page-gutter));
+  --page-inset: calc(
+    var(--page-border-width) + var(--page-gutter) +
+      max(var(--safe-left), var(--safe-right))
+  );
   --header-height: 64px;
   --breakpoint-desktop: 768px;
 
