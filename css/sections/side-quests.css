@@ -5,6 +5,9 @@
   isolation: isolate;
   background-color: var(--color-bg-alt);
   padding: var(--space-25) var(--page-inset);
+  /* same contract as .hero: the flower is clipped by its own section, so it can never
+     widen the document and let mobile Safari pan the page sideways */
+  overflow-x: clip;
 }
 
 .side-quests__inner {

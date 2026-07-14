@@ -6,6 +6,13 @@
   min-height: 100vh;
   min-height: 100dvh;
   background-color: var(--color-bg);
+  /* --header bleeds past the right edge by design. Clip it here, at the section that
+     owns it, rather than leaning on the root's overflow-x: clip — iOS Safari lets the
+     visual viewport pan sideways anyway when the document is wider than the screen,
+     which slides the content left and opens a phantom gap down the right-hand side.
+     Fixed children (.hero__border) take the viewport as their containing block, so the
+     page frame escapes this clip and still paints edge to edge. */
+  overflow-x: clip;
 }
 
 .hero__border {
