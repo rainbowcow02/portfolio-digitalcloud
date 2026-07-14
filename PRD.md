@@ -159,8 +159,8 @@ portfolio-digitalcloud/
 │       ├── nav.css
 │       ├── hero.css
 │       ├── work.css
-│       ├── side-quests.css   # pending
-│       ├── values.css        # pending
+│       ├── side-quests.css
+│       ├── values.css
 │       ├── footer.css        # pending
 │       └── game.css          # pending
 ├── js/
@@ -188,8 +188,8 @@ Build **section by section**. Do not advance until the current section passes ve
 | **M2** | Nav | ✅ Done | Sticky header; desktop links; mobile hamburger→X morph; L→R drawer open / R→L close; parallel content fade on close; sound UI only; Resume URL; drawer covers sound (no sound fade) |
 | **M3** | Hero | ✅ Done | Avatar, bio + lilac company links, Display-1, meta, flowers, page border |
 | **M4** | Work grid | ✅ Done | Section header + 5 project blocks (3/2/3/1/3 imgs); grey placeholders; images stack on mobile; snapshots + projects flowers |
-| **M5** | Side quests | ⬜ Pending | 3 cards; snow background; flowers |
-| **M6** | Design values | ⬜ Pending | 2-col → stack; all 6 values; star icons |
+| **M5** | Side quests | ✅ Done | Section header + 3 cards (Cupboard, Cute Notes, Cozy Calcifer); snow background; grey placeholders; stacked on mobile; side flower |
+| **M6** | Design values | ✅ Done | Left header + 700px value list; all 6 ValueRows with star icons; stacks on mobile |
 | **M7** | Footer + contact | ⬜ Pending | thank you, Get in touch, social placeholders, legal row |
 | **M8** | Game (catch the stars) | ⬜ Pending | mini-me + stars; Space/click to play; simple scoring |
 | **M9** | Polish pass | ⬜ Pending | Focus states audit, reduced motion, console clean, cross-check Figma |
@@ -253,7 +253,9 @@ Stop: `Ctrl+C` in the terminal where the server is running.
 | 2026-07-13 | PRD authored |
 | 2026-07-13 | M3 Hero: avatar + bio, lilac company underlines, Display-1, meta pairs, flower decor, mauve page border; responsive stack |
 | 2026-07-13 | M4 Work: “Snapshots of my work” + 5 ProjectBlocks; flex image rows (3/2/3/1/3) at 383×287 aspect; images stack full-width on mobile; hover lift; snapshots + projects flowers. Work has no background of its own, so the header flower spills past the hero into Work while Work's content still paints over it |
+| 2026-07-13 | M5 Side quests: snow panel; centered header + 650px description; 3 SideQuestCards (Cupboard / Cute Notes / Cozy Calcifer) in a flex row that stacks on mobile; grey image placeholders with hover lift; side flower starts above the section so it spills onto Work's white background. Removed the temporary `.page-spacer` — `#side` is now a real section |
+| 2026-07-13 | M6 Design values: left SectionHeader (320px) + right value list (max 700px) on desktop, stacked on mobile; 6 ValueRows with `icon-star.svg`, hairline rules between rows (top rule desktop-only per Figma); value body drops to 15px on mobile (`--text-body-mobile`); values flower crests the top edge onto the side-quests snow panel |
 
 ---
 
-*Next up: **M5 — Side quests**.*
+*Next up: **M7 — Footer + contact**.*

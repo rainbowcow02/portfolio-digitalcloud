@@ -1,0 +1,135 @@
+/* ——— Side quests ——— */
+
+.side-quests {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--color-bg-alt);
+  padding: var(--space-25) var(--page-inset);
+}
+
+.side-quests__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-10);
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.side-quests__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  text-align: center;
+}
+
+.side-quests__title {
+  margin: 0;
+}
+
+.side-quests__desc {
+  margin: 0;
+  width: 650px;
+  max-width: 100%;
+}
+
+/* the flower starts above the section, so it spills up onto the white Work
+   background while the snow panel still paints under the cards */
+/* already small at its 355px design size, so it holds a 300px floor instead of
+   tracking the viewport all the way down */
+.flower-decor--side {
+  top: calc(var(--space-20) * -1);
+  left: 70%;
+  width: clamp(300px, 25vw, 355px);
+  height: auto;
+  mix-blend-mode: multiply;
+}
+
+/* ——— SideQuestCard ——— */
+
+.side-quests__list {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-9); /* Figma 36 */
+  width: 100%;
+}
+
+.side-quest {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: var(--space-6); /* Figma 23 → round up */
+  min-width: 0;
+}
+
+.side-quest__img {
+  width: 100%;
+  aspect-ratio: 369 / 287;
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-muted);
+  transition: transform var(--duration-med) var(--ease-out);
+}
+
+.side-quest__img:hover {
+  transform: translateY(-4px);
+}
+
+.side-quest__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.side-quest__meta {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  white-space: nowrap;
+}
+
+.side-quest__name,
+.side-quest__desc {
+  margin: 0;
+}
+
+/* ——— Mobile ≤767px ——— */
+
+@media (max-width: 767px) {
+  .side-quests {
+    padding: var(--space-20) var(--page-inset);
+  }
+
+  .side-quests__header {
+    gap: var(--space-3);
+  }
+
+  .flower-decor--side {
+    top: calc(var(--space-7) * -1);
+    left: 60%;
+    width: clamp(140px, 41vw, 160px);
+  }
+
+  .side-quests__list {
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .side-quest__img {
+    aspect-ratio: 5 / 4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .side-quest__img {
+    transition: none;
+  }
+
+  .side-quest__img:hover {
+    transform: none;
+  }
+}
