@@ -3,10 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <!-- --mauve, the frame's own tint: mobile browsers paint their status bar and
-         toolbar with it, so the frame reads as continuing past the edges of the screen
-         instead of butting against a white system band. Keep in sync with tokens.css. -->
-    <meta name="theme-color" content="#fbeaff" />
+    <!-- The midpoint of --gradient-page-border (mauve → periwinkle). In portrait, iOS
+         Safari owns the status bar and toolbar outright — safe-area-inset-top is 0 and
+         no amount of viewport-fit lets the page paint up there — so this is the only way
+         to carry the frame's colour into those bands. It has to be the *middle* of the
+         gradient, not either end: one colour serves both bars, and either endpoint sits
+         too close to white to read as a tint at all. Keep in sync with tokens.css. -->
+    <meta name="theme-color" content="#e9e7ff" />
     <title>Lindsay Lee — Product Designer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

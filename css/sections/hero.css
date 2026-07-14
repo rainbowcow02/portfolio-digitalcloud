@@ -38,6 +38,29 @@
   pointer-events: none;
 }
 
+/* The frame is 100dvh, so its bottom stroke lands on the browser's bottom edge — but the
+   *document* keeps rendering past that, under Safari's floating toolbar. Left alone, the
+   hero name scrolls crisply through that strip, outside the frame that's meant to contain
+   it. Frost the strip so content dissolves as it leaves the frame instead: same white +
+   blur as .site-header, so the page has one "under glass" material rather than two.
+
+   Anchored at 100dvh (the frame's own outer bottom edge, so the stroke stays visible) and
+   deliberately overshooting by 100vh — there is nothing below it to clip against, and the
+   overshoot means it still reaches the screen edge on any phone whose toolbar geometry we
+   can't measure from CSS. */
+.hero__border::after {
+  content: "";
+  position: fixed;
+  top: 100dvh;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  pointer-events: none;
+}
+
 /* while the nav drawer is open, drop the frame under the drawer (200) and its header (210) */
 body.is-nav-open .hero__border {
   z-index: 150;
