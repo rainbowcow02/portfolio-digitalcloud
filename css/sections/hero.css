@@ -395,30 +395,61 @@ html.js-motion .hero__name .char {
     letter-spacing: 0.01em;
   }
 
+  /* Label sits tighter to its value at mobile sizes — 2px, half of --space-1. Off the
+     4px scale on purpose: the type shrank but the gap didn't, so the pair read as two
+     loose lines rather than one unit.
+
+     Both selectors are needed: the right column gaps on .meta-pair itself, the left one
+     on .meta-pair__text inside the link. The :not() matters — .meta-pair--scroll is a
+     .meta-pair too, but it's flex-direction: row, so its gap is the arrow-to-text
+     spacing, which has to stay at --space-1. It's also part of the 40px the mono
+     shrink-to-fit below budgets for, so narrowing it here would silently overstate the
+     room that calc thinks it has. */
+  .hero__meta .meta-pair:not(.meta-pair--scroll),
+  .hero__meta .meta-pair__text {
+    gap: 2px;
+  }
+
+  /* Optical alignment, not layout alignment: the arrow's layout box is flush with the
+     column, but its ink isn't. The glyph is drawn from x=10.3125 in a 30-unit viewBox
+     scaled to 24px, so 10.3125 × 0.8 = 8.25px of the box is empty air, and the arrow
+     reads as indented against everything above it.
+
+     Pulling the full 8.25px would overshoot, since the type it aligns to has a side
+     bearing of its own: the bio's ink starts 1.25px into its box. 8.25 − 1.25 lands the
+     arrow's ink flush with the paragraph's.
+
+     Only the scroll pair moves. The row is space-between, so shifting the row itself
+     would drag "Based in NYC" off the right margin too. The 7px hangs into the page
+     gutter, which is 32px wide — nowhere near enough to pan the page. */
+  .hero__meta .meta-pair--scroll {
+    margin-left: -7px;
+  }
+
   /* The two mono lines are one row that must never break — the same shrink-to-fit trick
      the name uses above, and for the same reason: a fixed size can't promise a fit.
 
      Both strings are IBM Plex Mono, whose advance is a flat 0.6em, and --tracking-meta
-     takes 0.01em back off each character: 0.59em per char, and 26 + 17 = 43 chars, so
-     the pair costs 25.4em however wide the phone is. Around it sit costs the text can't
-     shrink: the 24px arrow, the --space-1 beside it, and the --space-2 row gap above —
-     36px, rounded up to 40px so the fit is never exact. (It has to be inexact: at 36px
-     the row lands a subpixel over its container at some widths, and an overflow here
-     pans the whole page.) Solving 25.4em + 40px = 100cqw against the masthead container
-     gives the largest size that still holds one line, and min() caps it at the 10px
-     design size, which the row reaches around a 400px viewport.
+     takes 0.01em back off each character: 0.59em per char, and "Message for details" +
+     "40.7128, -74.0060" is 19 + 17 = 36 chars, so the pair costs 21.3em however wide the
+     phone is. Around it sit costs the text can't shrink: the 24px arrow, the --space-1
+     beside it, and the --space-2 row gap above — 36px, rounded up to 40px so the fit is
+     never exact. (It has to be inexact: at 36px the row landed a subpixel over its
+     container at some widths, and an overflow here pans the whole page.)
 
-     That arithmetic is also why a flat 10px wrapped at 393px, though the gap was the
-     nearer cause: the two columns leave only 12.4px between them there, less than the
-     --space-4 the row used to ask for, so flex shrank them until the mono broke.
-
-     Re-derive 25.4 if either string, the family, or the tracking changes. The divisor is
-     a bare number, so both terms must stay inside the parens for the calc to parse. */
+     Solving 21.3em + 40px = 100cqw against the masthead container gives the largest size
+     that still holds one line; min() caps it at the 10px design size. With the current
+     copy the cap wins down to a ~348px viewport, so the calc is mostly a floor that
+     keeps very narrow phones on one line — it earns its keep again the moment the copy
+     grows. Re-derive 21.3 (chars × 0.59) if either string, the family, or the tracking
+     changes: an overlong string here silently shrinks the type instead of wrapping, so
+     the failure is quiet. The divisor is a bare number, so both terms must stay inside
+     the parens for the calc to parse. */
   .hero__meta .type-meta-secondary {
     white-space: nowrap;
     font-size: min(
       var(--text-meta-secondary-mobile),
-      calc((100cqw - 40px) / 25.4)
+      calc((100cqw - 40px) / 21.3)
     );
   }
 }
