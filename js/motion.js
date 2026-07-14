@@ -148,7 +148,7 @@ async function playHeroEntrance() {
     .fromTo(
       "[data-hero-reveal='avatar']",
       { y: 38, scale: 0.92 },
-      { y: 0, scale: 1, duration: 0.5, ease: "back.out(1.2)" },
+      { y: 0, scale: 1, duration: 0.4, ease: "back.out(2.1)" },
       0.15
     )
     .fromTo(
