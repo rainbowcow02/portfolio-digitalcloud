@@ -135,21 +135,37 @@ async function playHeroEntrance() {
   const chars = name ? splitHeroName(name) : null;
   const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-  // She pops up into frame rather than dissolving in: rising from below, overshooting
-  // her resting spot, settling. The fade is a separate, much shorter tween — carried
-  // by the back ease it would read as the crossfade we're trying to get away from, so
-  // she's opaque a quarter of the way up and the rest is pure movement.
+  // Two beats, and the beats are the joke: the disc pops in empty, holds, and then she
+  // jumps up out of it. Collapse the hold and the two read as one blurry motion.
+  //
+  // The whole thing stays deliberately plain — one overshoot each, no wobble to shake out.
+  // Half the hero is text arriving in the same second and this is the only element moving
+  // in two dimensions; give it a flourish as well and it starts competing with the name.
+  //
+  // The disc's fade is a separate, much shorter tween — carried by the back ease it would
+  // read as the crossfade we're trying to get away from, so it's opaque a third of the way
+  // up and the rest is pure movement.
   tl.fromTo(
     "[data-hero-reveal='avatar']",
     { opacity: 0 },
-    { opacity: 1, duration: 0.22, ease: "none" },
+    { opacity: 1, duration: 0.24, ease: "none" },
     0.15
   )
     .fromTo(
       "[data-hero-reveal='avatar']",
-      { y: 38, scale: 0.92 },
-      { y: 0, scale: 1, duration: 0.4, ease: "back.out(2.1)" },
+      { scale: 0.4 },
+      { scale: 1, duration: 0.45, ease: "back.out(2.4)" },
       0.15
+    )
+    // She gets no fade at all: she starts below the disc's bottom edge, clipped out of
+    // sight, so there is nothing to dissolve. yPercent is of her own height, and she's
+    // ~2.4x the disc tall — 62% is what it takes to clear the rim.
+    .set("[data-hero-reveal='avatar-figure']", { opacity: 1 }, 0.6)
+    .fromTo(
+      "[data-hero-reveal='avatar-figure']",
+      { yPercent: 62},
+      { yPercent: 0, duration: 0.4, ease: "back.out(0.7)" },
+      0.6
     )
     .fromTo(
       "[data-hero-reveal='bio']",
@@ -285,7 +301,9 @@ function initFlowerParallax() {
  * pixel art should snap; a dissolve reads as mushy and fights the 8-bit voice.
  *
  * Asset-agnostic: reads the pose list off `data-poses`, so adding a pose is a markup
- * change. Degrades to nothing if only the base pose is listed.
+ * change. Dormant until that attribute comes back — the hero img carries a `srcset`
+ * now, which outranks the `src` this swaps, so poses will also need their own 1x/2x
+ * pair and a `srcset` swap here, not just a new path in the list.
  */
 function initAvatarPoses() {
   const avatar = document.querySelector("[data-poses]");

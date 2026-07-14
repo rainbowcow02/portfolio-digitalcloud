@@ -34,9 +34,9 @@ Build a personal portfolio site from the Figma desktop and mobile specs with hig
 |---|---|
 | Stack (v1) | Plain HTML + CSS + vanilla JS; GSAP via CDN. No React/Vite for v1. |
 | Future architecture | Simple case-study pages and an about page may be added later; revisit Vite/React only if multi-page complexity warrants it. |
-| Sound | Build toggle UI only. Default **off**. Audio wiring deferred. |
+| Sound | Toggle UI + WebAudio SFX for the game (catch / miss / game-over). Default **off**. Ambient MP3 still deferred. |
 | Music source (later) | Prefer a licensed ambient MP3 in `/assets/audio/`. Spotify Web Playback is a poor fit for a simple ambience toggle (Premium + OAuth). |
-| Game | **Catch the stars** — mini-me character + star assets; vibe-code a simple 8-bit style game inspired by playful easter eggs (e.g. Notion `/dev`). Exact mechanics TBD at game milestone. |
+| Game | **Catch the stars** — canvas play field, DOM HUD. Endless round, 3 lives; score-keyed ramp; personal best in `localStorage` (`ctsBest`); WebAudio SFX gated on the sound toggle. No combo multiplier, no golden star. |
 | Resume | [Google Drive PDF](https://drive.google.com/file/d/1mQqWUtJsV2n5Tk-uJDFnfsV9eOMg8I_J/view) — open in new tab |
 | Copy | Use Figma placeholder text as-is; final copy later |
 | Design values (mobile) | Show all **6** values, stacked |
@@ -97,7 +97,7 @@ Fonts: **Inclusive Sans** (display), **IBM Plex Sans** (body/UI), **IBM Plex Mon
 - Visible `:focus-visible` (ink outline + lilac offset ring)  
 - Nav / company links: lilac underline grows from left  
 - Honor `prefers-reduced-motion`  
-- Sound: `aria-pressed`, icon swap, no audio yet  
+- Sound: `aria-pressed`, icon swap; WebAudio game SFX when on (default off)  
 - Project image hover: subtle lift (when images land)  
 
 ---
@@ -167,7 +167,8 @@ portfolio-digitalcloud/
 │   ├── main.js
 │   ├── nav.js
 │   ├── sound.js
-│   └── game.js               # pending
+│   ├── motion.js
+│   └── game.js
 └── assets/                   # final filenames; no generated placeholders
 ```
 
@@ -191,7 +192,7 @@ Build **section by section**. Do not advance until the current section passes ve
 | **M5** | Side quests | ✅ Done | Section header + 3 cards (Cupboard, Cute Notes, Cozy Calcifer); snow background; grey placeholders; stacked on mobile; side flower |
 | **M6** | Design values | ✅ Done | Left header + 700px value list; all 6 ValueRows with star icons; stacks on mobile |
 | **M7** | Footer + contact | ✅ Done | thank you, Get in touch, live social links (LinkedIn / GitHub / email), legal row |
-| **M8** | Game (catch the stars) | 🟨 In progress | Placeholder stage built (card + prompt + mini-me). Still to do: mini-me + stars, Space/click to play, simple scoring |
+| **M8** | Game (catch the stars) | ✅ Done | Canvas game in `js/game.js`: mini-me catches falling stars, 3 misses ends it, best score persisted. Card is the start button; arrows / drag to move |
 | **M9** | Polish pass | ⬜ Pending | Focus states audit, reduced motion, console clean, cross-check Figma |
 | **M10** | Content & assets swap | ⬜ Later | Final copy, images, optional audio file |
 | **M11** | Multi-page (optional) | ⬜ Later | About + case studies |
@@ -238,7 +239,7 @@ Stop: `Ctrl+C` in the terminal where the server is running.
 | “Lowest level of detail” value body (`xxx`) | Waiting on Lindsay |
 | Work / side-quest imagery | Waiting on Lindsay |
 | Ambient audio file for sound toggle | Deferred |
-| Exact catch-the-stars rules (scoring, difficulty) | Decide at M8 |
+| Exact catch-the-stars rules (scoring, difficulty) | ✅ Decided at M8 — see §2 |
 | About / case-study IA | Post-v1 |
 
 ---
@@ -261,7 +262,8 @@ Stop: `Ctrl+C` in the terminal where the server is running.
 | 2026-07-14 | M7 SocialIcons are real: LinkedIn, GitHub and a mailto, as inline `currentColor` SVGs (no new asset files, sharp at any size) centred in Figma's 48px tile, which is kept as the tap target. Hover lifts 2px; the global `:focus-visible` ring picks up the tile's 8px radius. Grey placeholders retired |
 | 2026-07-14 | M8 (partial) Game placeholder: `#game` section slots between the footer contact row and the legal row, inside the footer's snow panel. White card (287px, 5px white border, 6px radius) centred on “Click or press “space” to play” (Title/Sm) above the 68×82 mini-me. No JS and no game behaviour yet — the prompt is copy, not a control, so the card is not focusable or clickable until the mechanics land |
 | 2026-07-14 | M9 Motion layer (`js/motion.js`, planned in [MOTION.md](MOTION.md)): hero entrance (avatar → bio → per-letter name reveal → meta → arrow bob), scroll reveals, staggered values with a star pop, and flower parallax. **Added ScrollTrigger** from the same GSAP CDN + version pin — a first-party plugin of an already-approved library, not a new dependency; the alternative (IntersectionObserver + a hand-rolled rAF loop) can't do scrubbed parallax without reimplementing it badly. Rejected: smooth-scroll libraries (they hijack input, and translating `main` would break the fixed page frame), shaders/three.js, cursor parallax. Two structural rules: reveals' `opacity: 0` is gated on `html.js-motion` so a blocked CDN can never blank the page, and reduced motion is enforced via `gsap.matchMedia` in JS — the `!important` transition rule in base.css does nothing to GSAP. Flowers are parallaxed by writing a `--p` scalar only, never a GSAP `transform` tween, which would bake an inline transform and permanently defeat the mobile `--base-y` override |
+| 2026-07-14 | M8 Game mechanics: `js/game.js` on `gsap.ticker` (rAF fallback). Stars fall, mini-me catches; 3 misses → game over; score-keyed ramp; `ctsBest` in localStorage. Sound toggle drives WebAudio blips (`js/sound.js` exports `isSoundOn()`). Pause on blur / hide / scroll-away; keys only hijacked while playing. Reduced-motion exception logged in MOTION.md — gameplay motion stays, decorative sparkles/spin/squash gate off |
 
 ---
 
-*Next up: **M8 — Game mechanics (catch the stars)**.*
+*Next up: **M9 — Polish pass**.*

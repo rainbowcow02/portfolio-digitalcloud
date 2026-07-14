@@ -101,18 +101,54 @@
   --radius-sm: 6px;
   --radius-md: 8px;
   --page-border-width: 16px;
+
+  /* Safe-area insets (0 everywhere except notched/rounded mobile screens; the page
+     opts into them with viewport-fit=cover). The frame paints *through* these — its
+     stroke grows by the inset on each side so the gradient reaches the physical edge
+     of the screen instead of stopping short of the status bar. Anything that has to
+     stay clear of the frame adds the same inset back. No --safe-bottom: the frame is
+     sized in dvh, which already ends at the browser's own bottom edge. */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+
   /* the page frame is fixed over the viewport edge, so a section's inset has to
      add it back in to leave --page-gutter of air between frame and content */
   --page-gutter: var(--space-8);
-  --page-inset: calc(var(--page-border-width) + var(--page-gutter));
+  --page-inset: calc(
+    var(--page-border-width) + var(--page-gutter) +
+      max(var(--safe-left), var(--safe-right))
+  );
   --header-height: 64px;
   --breakpoint-desktop: 768px;
 
   /* ——— Motion ——— */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  /* A gentle, near-symmetric glide. --ease-out is an expo curve: it bolts off the line and
+     decelerates hard, which is exactly right at --duration-fast but reads as "darts, then
+     hangs" once a move runs long. Anything unhurried wants a softer ramp at both ends. */
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
   --duration-fast: 180ms;
   --duration-med: 320ms;
   --duration-slow: 700ms;
+
+  /* The header's retraction. Deliberately unhurried — this is ambient chrome getting out
+     of the reader's way, and it should never feel like it's snatching itself off-screen.
+     The exit is the lazier of the two; the return is a shade quicker because it answers a
+     scroll the reader just made, but both are a long way from urgent.
+
+     --duration-chrome-fade is the one to tune first. It, NOT --duration-chrome-out, is the
+     number the eye actually times: the header fades to nothing while it is only ~60% of the
+     way through its slide, so the rest of that slide is never seen. Keep the fade at roughly
+     60% of the slide — push it much closer and you start *watching* the header labour
+     off-screen, which reads as sluggish rather than relaxed.
+
+     These are the desktop values. Mobile keeps its own, quicker set at the bottom of this
+     file: a touch fling keeps content ripping past, which camouflages the dissolve, so the
+     same timings that feel languid on a mouse wheel feel sleepy under a thumb. */
+  --duration-chrome-out: 900ms;
+  --duration-chrome-fade: 560ms;
+  --duration-chrome-in: 640ms;
 
   /* Link highlighter: the resting underline swells to a marker stroke on hover.
      Drawer links are display-size, so they thicken as a bar instead of filling.
@@ -134,6 +170,12 @@
   --avatar-hover-scale: 1.03;
   --avatar-hover-tilt: -1.5deg;
 
+  /* The cutout inside the disc, sized and placed against the disc's own box so the
+     96px mobile disc needs no override. She's taller than the disc — the width lands
+     her head inside the rim, and the disc clips her legs. */
+  --avatar-figure-width: 74%;
+  --avatar-figure-top: 14%;
+
   /* Headroom the hero name's per-word mask adds below the baseline so the
      descender in "Lindsay" isn't clipped. Also the letters' start offset. */
   --name-mask-pad: 0.18em;
@@ -144,5 +186,15 @@
 @media (max-width: 767px) {
   :root {
     --header-height: 76px;
+
+    /* The header retracts noticeably quicker under a thumb than under a mouse wheel, and
+       it has to. A touch fling keeps the content ripping past while the header dissolves,
+       so the movement is camouflaged and reads as subtle. A wheel notch teleports the page
+       and stops dead, leaving the identical dissolve fully exposed against a static
+       backdrop — where it looks hurried. Same motion, different exposure; hence two sets of
+       numbers rather than one compromise that suits neither. */
+    --duration-chrome-out: 620ms;
+    --duration-chrome-fade: 320ms;
+    --duration-chrome-in: 440ms;
   }
 }

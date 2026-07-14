@@ -6,6 +6,13 @@
   min-height: 100vh;
   min-height: 100dvh;
   background-color: var(--color-bg);
+  /* --header bleeds past the right edge by design. Clip it here, at the section that
+     owns it, rather than leaning on the root's overflow-x: clip — iOS Safari lets the
+     visual viewport pan sideways anyway when the document is wider than the screen,
+     which slides the content left and opens a phantom gap down the right-hand side.
+     Fixed children (.hero__border) take the viewport as their containing block, so the
+     page frame escapes this clip and still paints edge to edge. */
+  overflow-x: clip;
 }
 
 .hero__border {
@@ -15,8 +22,42 @@
   z-index: 220;
   height: 100vh;
   height: 100dvh;
-  border: var(--page-border-width) solid var(--color-page-border);
+  border-style: solid;
+  /* Each side is the frame stroke *plus* that side's safe-area inset, so on a notched
+     phone the gradient keeps painting out to the physical edge — under the status bar,
+     into the rounded corners — instead of leaving a bare white band there. The bottom
+     needs no inset: 100dvh already ends at the browser's usable bottom edge, and grows
+     into the home-indicator area on its own when the toolbar collapses. */
+  border-width:
+    calc(var(--page-border-width) + var(--safe-top))
+    calc(var(--page-border-width) + var(--safe-right))
+    var(--page-border-width)
+    calc(var(--page-border-width) + var(--safe-left));
+  border-color: var(--color-page-border);
   border-image: var(--gradient-page-border) 1;
+  pointer-events: none;
+}
+
+/* The frame is 100dvh, so its bottom stroke lands on the browser's bottom edge — but the
+   *document* keeps rendering past that, under Safari's floating toolbar. Left alone, the
+   hero name scrolls crisply through that strip, outside the frame that's meant to contain
+   it. Frost the strip so content dissolves as it leaves the frame instead: same white +
+   blur as .site-header, so the page has one "under glass" material rather than two.
+
+   Anchored at 100dvh (the frame's own outer bottom edge, so the stroke stays visible) and
+   deliberately overshooting by 100vh — there is nothing below it to clip against, and the
+   overshoot means it still reaches the screen edge on any phone whose toolbar geometry we
+   can't measure from CSS. */
+.hero__border::after {
+  content: "";
+  position: fixed;
+  top: 100dvh;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   pointer-events: none;
 }
 
@@ -70,7 +111,7 @@ body.is-nav-open .hero__border {
   min-height: 100vh;
   min-height: 100dvh;
   padding:
-    calc(var(--header-height) + var(--space-20))
+    calc(var(--header-height) + var(--space-20) + var(--safe-top))
     var(--page-inset)
     var(--space-10);
 }
@@ -84,15 +125,14 @@ body.is-nav-open .hero__border {
   margin-left: calc(90px - var(--page-inset));
 }
 
-/* Entrance-only stage for the avatar. Exists purely so GSAP has a transform to own:
-   the pop overshoots past its resting position, and if it drove .hero__avatar the
+/* Entrance-only stage for the disc. Exists purely so GSAP has a transform to own:
+   the disc scales in past its resting size, and if that drove .hero__avatar the
    inline transform it leaves behind would permanently outrank the :hover rule below. */
 .hero__avatar-pop {
   flex-shrink: 0;
 }
 
-/* Hovering cycles the pose (js/motion.js swaps the img src). The tilt and scale give
-   the container life the instant the cursor lands, before the first pose swap. */
+/* The disc is a porthole, not a frame: overflow:hidden is what she pops up out of. */
 .hero__avatar {
   position: relative;
   flex-shrink: 0;
@@ -110,11 +150,21 @@ body.is-nav-open .hero__border {
   transform: scale(var(--avatar-hover-scale)) rotate(var(--avatar-hover-tilt));
 }
 
+/* GSAP owns this element's transform during the pop, so she can't be centered with a
+   translateX(-50%) it would overwrite — the negative margin does it in the box model
+   instead. */
+.hero__avatar-figure {
+  position: absolute;
+  left: 50%;
+  top: var(--avatar-figure-top);
+  width: var(--avatar-figure-width);
+  margin-left: calc(var(--avatar-figure-width) / -2);
+}
+
 .hero__avatar-img {
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 20%;
+  height: auto;
 }
 
 .hero__bio {
@@ -178,15 +228,18 @@ body.is-nav-open .hero__border {
   flex-direction: column;
   gap: var(--space-4);
   max-width: 100%;
+  /* the query container the mobile name sizes itself against — see .hero__name below */
+  container-type: inline-size;
 }
 
 .hero__name {
   margin: 0;
   max-width: 100%;
-  /* Note: this stops working once js/motion.js splits the name into per-word
-     inline-blocks — atomic inlines offer no break opportunity inside a word. The
-     splitter measures for overflow afterwards and reverts to plain text if
-     "Lindsay" no longer fits, which restores this rule. */
+  /* Desktop only: the name is free to wrap. Note this stops working once js/motion.js
+     splits the name into per-word inline-blocks — atomic inlines offer no break
+     opportunity inside a word. The splitter measures for overflow afterwards and
+     reverts to plain text if "Lindsay" no longer fits, which restores this rule.
+     (Mobile takes the opposite approach: it forbids wrapping and shrinks to fit.) */
   overflow-wrap: anywhere;
 }
 
@@ -267,9 +320,11 @@ html.js-motion .hero__name .char {
     --drift: 40px;
   }
 
+  /* Everything from here to .hero__name is a vertical budget: the masthead only clears
+     the fold on a ~745px-tall phone if the intro above it stays under ~420px. */
   .hero__inner {
     padding:
-      calc(var(--header-height) + var(--space-10))
+      calc(var(--header-height) + var(--space-6))
       var(--page-inset)
       var(--space-10);
     gap: var(--space-6);
@@ -277,22 +332,29 @@ html.js-motion .hero__name .char {
 
   .hero__intro {
     flex-direction: column;
-    gap: var(--space-9);
+    gap: var(--space-6);
     width: 100%;
     margin-left: 0;
   }
 
   .hero__avatar {
-    width: 112px;
-    height: 112px;
+    width: 96px;
+    height: 96px;
     box-shadow: none;
   }
 
+  /* No left indent here: it would cut the copy measure from 297px to 249px, which costs
+     the bio roughly two extra lines — the single largest reason the name fell below the
+     fold. The bio runs full-bleed to the page inset instead. */
   .hero__bio {
     padding-top: 0;
-    padding-left: var(--space-12);
     max-width: none;
     width: 100%;
+  }
+
+  .hero__copy p {
+    font-size: var(--text-body-mobile);
+    line-height: 1.45;
   }
 
   .hero__tagline {
@@ -302,14 +364,38 @@ html.js-motion .hero__name .char {
   }
 
   .hero__masthead {
-    gap: var(--space-4);
+    gap: var(--space-3);
+  }
+
+  /* "Lindsay Lee" is one typographic unit on mobile — it must never break across lines.
+     A fixed size can't promise that: in Inclusive Sans 700 at --tracking-display-1-mobile
+     the string measures 5.24em, so the 60px desktop-mobile size wants 314px and a 393px
+     phone only offers 297px between the page insets. That's the wrap.
+
+     So size the name off the masthead's width instead of the viewport's: 19.09cqw fills
+     the measure exactly, and 18.5cqw leaves ~3% of slack. The slack is load-bearing —
+     js/motion.js reverts the per-word split (and with it the letter reveal) if the h1
+     overflows by even a pixel, so an exact fit would be a coin flip against hinting and
+     kerning. Re-derive the constant if the name, the family, or the tracking changes.
+
+     The min() caps growth at the 60px design size, which the name reaches around a 420px
+     viewport. Without it the fill would keep scaling to ~128px at the 767px breakpoint
+     and then snap back down to the desktop ramp's ~86px. */
+  .hero__name {
+    white-space: nowrap;
+    font-size: min(18.5cqw, var(--text-display-1));
+    /* If GSAP never loads, playHeroEntrance() — and its wait on document.fonts — never
+       runs, so the h1 can paint in the fallback sans, which is wider. Clip rather than
+       let that push horizontal scroll on the whole page. x only: the word masks need
+       overflow-y visible for their descender padding. */
+    overflow-x: clip;
   }
 
   .hero__meta {
     width: 100%;
     max-width: 100%;
     justify-content: space-between;
-    gap: var(--space-4);
+    gap: var(--space-2);
     padding-left: 0;
   }
 
@@ -318,8 +404,62 @@ html.js-motion .hero__name .char {
     letter-spacing: 0.01em;
   }
 
-  .hero__meta .type-meta-second`ary {
-    font-size: var(--text-meta-secondary-mobile);
+  /* Label sits tighter to its value at mobile sizes — 2px, half of --space-1. Off the
+     4px scale on purpose: the type shrank but the gap didn't, so the pair read as two
+     loose lines rather than one unit.
+
+     Both selectors are needed: the right column gaps on .meta-pair itself, the left one
+     on .meta-pair__text inside the link. The :not() matters — .meta-pair--scroll is a
+     .meta-pair too, but it's flex-direction: row, so its gap is the arrow-to-text
+     spacing, which has to stay at --space-1. It's also part of the 40px the mono
+     shrink-to-fit below budgets for, so narrowing it here would silently overstate the
+     room that calc thinks it has. */
+  .hero__meta .meta-pair:not(.meta-pair--scroll),
+  .hero__meta .meta-pair__text {
+    gap: 2px;
+  }
+
+  /* Optical alignment, not layout alignment: the arrow's layout box is flush with the
+     column, but its ink isn't. The glyph is drawn from x=10.3125 in a 30-unit viewBox
+     scaled to 24px, so 10.3125 × 0.8 = 8.25px of the box is empty air, and the arrow
+     reads as indented against everything above it.
+
+     Pulling the full 8.25px would overshoot, since the type it aligns to has a side
+     bearing of its own: the bio's ink starts 1.25px into its box. 8.25 − 1.25 lands the
+     arrow's ink flush with the paragraph's.
+
+     Only the scroll pair moves. The row is space-between, so shifting the row itself
+     would drag "Based in NYC" off the right margin too. The 7px hangs into the page
+     gutter, which is 32px wide — nowhere near enough to pan the page. */
+  .hero__meta .meta-pair--scroll {
+    margin-left: -7px;
+  }
+
+  /* The two mono lines are one row that must never break — the same shrink-to-fit trick
+     the name uses above, and for the same reason: a fixed size can't promise a fit.
+
+     Both strings are IBM Plex Mono, whose advance is a flat 0.6em, and --tracking-meta
+     takes 0.01em back off each character: 0.59em per char, and "Message for details" +
+     "40.7128, -74.0060" is 19 + 17 = 36 chars, so the pair costs 21.3em however wide the
+     phone is. Around it sit costs the text can't shrink: the 24px arrow, the --space-1
+     beside it, and the --space-2 row gap above — 36px, rounded up to 40px so the fit is
+     never exact. (It has to be inexact: at 36px the row landed a subpixel over its
+     container at some widths, and an overflow here pans the whole page.)
+
+     Solving 21.3em + 40px = 100cqw against the masthead container gives the largest size
+     that still holds one line; min() caps it at the 10px design size. With the current
+     copy the cap wins down to a ~348px viewport, so the calc is mostly a floor that
+     keeps very narrow phones on one line — it earns its keep again the moment the copy
+     grows. Re-derive 21.3 (chars × 0.59) if either string, the family, or the tracking
+     changes: an overlong string here silently shrinks the type instead of wrapping, so
+     the failure is quiet. The divisor is a bare number, so both terms must stay inside
+     the parens for the calc to parse. */
+  .hero__meta .type-meta-secondary {
+    white-space: nowrap;
+    font-size: min(
+      var(--text-meta-secondary-mobile),
+      calc((100cqw - 40px) / 21.3)
+    );
   }
 }
 

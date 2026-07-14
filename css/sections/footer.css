@@ -6,8 +6,8 @@
 
 /* ——— Contact row ——— */
 
-/* flex-end: the contact column sits on the baseline of "you", not centred on the
-   whole thanks block */
+/* the CTA stack and the game stage sit side by side, both hanging off the row's
+   bottom edge — the game then stretches back up to the CTA's height */
 .site-footer__contact {
   display: flex;
   align-items: flex-end;
@@ -17,6 +17,16 @@
   max-width: 1296px; /* Figma 1440 − 72px gutters */
   margin: 0 auto;
   padding: var(--space-20) var(--page-inset) var(--space-13); /* Figma 50 → 52 */
+}
+
+/* thanks + contact text stacked; hugs its widest child rather than a fixed 360 so
+   the fluid display type isn't clipped at large viewports */
+.site-footer__cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-6);
+  min-width: 0;
 }
 
 /* ——— Thank you ——— */
@@ -63,8 +73,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-6);
-  padding-bottom: var(--space-4);
+  gap: var(--space-4);
   flex: 0 0 auto;
 }
 
@@ -75,12 +84,6 @@
   gap: var(--space-2);
   width: 100%;
   text-align: center;
-}
-
-/* Figma drops "Get in touch" to Title/Sm (19) — the markup still carries type-lrg */
-.site-footer__title {
-  font-size: var(--text-sm);
-  letter-spacing: var(--tracking-sm);
 }
 
 .site-footer__desc {
@@ -172,14 +175,13 @@
     transform: rotate(2.5deg);
   }
 
-  .site-footer__contact-col {
+  .site-footer__cta {
     width: 100%;
-    gap: var(--space-4);
-    padding-bottom: 0;
+    gap: var(--space-8);
   }
 
-  .site-footer__title {
-    font-size: var(--text-lrg-mobile);
+  .site-footer__contact-col {
+    width: 100%;
   }
 
   /* Figma hides the contact blurb on mobile */

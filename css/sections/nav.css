@@ -10,12 +10,22 @@
   align-items: center;
   justify-content: space-between;
   min-height: var(--header-height);
-  padding: var(--space-8) var(--page-inset) var(--space-3);
+  /* the frame's top stroke now bleeds down through the status bar, so the header has
+     to start below the inset or the gradient would paint over the menu/sound buttons */
+  padding: calc(var(--space-8) + var(--safe-top)) var(--page-inset) var(--space-3);
   background-color: transparent;
+  /* This is the *return* trip — see .is-hidden for the exit. It answers a scroll the
+     reader just made, so it's the quicker of the two, but it still glides rather than
+     snaps: --ease-soft, not the expo --ease-out the rest of the page uses for hovers. */
   transition:
+    transform var(--duration-chrome-in) var(--ease-soft),
+    opacity var(--duration-chrome-in) var(--ease-soft),
     background-color var(--duration-med) var(--ease-out),
     box-shadow var(--duration-med) var(--ease-out),
     backdrop-filter var(--duration-med) var(--ease-out);
+  /* safe on the header specifically: it's a *sibling* of .hero__border, not an
+     ancestor, so it can't become the containing block for that fixed frame. */
+  will-change: transform;
 }
 
 .site-header.is-sticky {
@@ -25,12 +35,46 @@
   box-shadow: 0 1px 0 var(--color-border-soft);
 }
 
+/* Retracted on scroll-down (js/nav.js). The exit is the laziest move on the page — this is
+   ambient chrome wandering out of the reader's way, and it should never look like it's
+   snatching itself off-screen.
+   The opacity fade is the point: the sticky header is an opaque 0.88 white slab, and a
+   pure translate would drag that slab up across the content. Fading it means it
+   dissolves where it stands and the rest of the travel is never seen — the same
+   "content dissolves out of the frame" move as .hero__border::after.
+   Fade `opacity`, NOT `backdrop-filter`: blur doesn't interpolate cleanly, but element
+   opacity fades the backdrop-filter result for free and stays composite-only.
+   translateY is -100%, not a calc on --header-height: that token says 64px against a
+   rendered 74px on desktop, and can't see --safe-top. -100% is self-referential, so it
+   is right on every breakpoint and every notch without anyone maintaining a number.
+   No `visibility: hidden` — it would pull the nav links out of the tab order, and a
+   keyboard user could then never reach them. nav.js reveals on focusin instead. */
+.site-header.is-hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+  /* The fade is the exit, as far as the eye is concerned — it finishes while the slide is
+     only ~60% done, so the remaining travel happens unseen. That's what lets the exit be
+     long without feeling *slow*: you never watch the header labour off-screen. It follows
+     that --duration-chrome-fade, not --duration-chrome-out, is the knob that changes how
+     fast this reads. Slowing the slide alone does nothing you can see. */
+  transition:
+    transform var(--duration-chrome-out) var(--ease-soft),
+    opacity var(--duration-chrome-fade) linear;
+}
+
+/* The drawer outranks the retraction — declared after .is-hidden so it wins on source
+   order at equal specificity. Guards the case where the drawer is opened while the
+   header is mid-retraction (the toggle is still hit-testable for those few frames). */
 .site-header.is-nav-open {
   z-index: 210;
   background-color: transparent;
   box-shadow: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
+  transform: none;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .site-header.is-nav-open .site-header__end {

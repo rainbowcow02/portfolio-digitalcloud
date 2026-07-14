@@ -3,6 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- The midpoint of --gradient-page-border (mauve → periwinkle). In portrait, iOS
+         Safari owns the status bar and toolbar outright — safe-area-inset-top is 0 and
+         no amount of viewport-fit lets the page paint up there — so this is the only way
+         to carry the frame's colour into those bands. It has to be the *middle* of the
+         gradient, not either end: one colour serves both bars, and either endpoint sits
+         too close to white to read as a tint at all. Keep in sync with tokens.css. -->
+    <meta name="theme-color" content="#e9e7ff" />
     <title>Lindsay Lee — Product Designer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -69,7 +76,7 @@
           data-sound-toggle
           aria-pressed="false"
           aria-label="Sound off"
-          title="Sound (coming soon)"
+          title="Sound"
         >
           <img
             class="sound-toggle__img sound-toggle__img--off"
@@ -141,21 +148,22 @@
 
         <div class="hero__inner">
           <div class="hero__intro">
-            <!-- The entrance pop lives on this wrapper, not on .hero__avatar and not
-                 on the img: GSAP leaves an inline transform behind, which would
-                 outrank the container's :hover transform, and the container's
-                 circular overflow:hidden would clip an img that moved inside it. -->
+            <!-- Three transform surfaces, none of them shared: GSAP scales the disc in
+                 on -pop (an inline transform on .hero__avatar itself would outrank its
+                 :hover rule), and she pops up on -figure, whose travel is clipped by the
+                 disc's circular overflow:hidden — that clip is the porthole effect. -->
             <div class="hero__avatar-pop" data-hero-reveal="avatar">
-              <!-- data-poses drives the hover cycle in js/motion.js. Add a pose by
-                   appending its path here — no JS change needed. -->
-              <div class="hero__avatar" data-poses="assets/Avatar.png">
-                <img
-                  class="hero__avatar-img"
-                  src="assets/Avatar.png"
-                  alt="Illustrated portrait of Lindsay Lee"
-                  width="144"
-                  height="144"
-                />
+              <div class="hero__avatar">
+                <div class="hero__avatar-figure" data-hero-reveal="avatar-figure">
+                  <img
+                    class="hero__avatar-img"
+                    src="assets/avatar-full.png"
+                    srcset="assets/avatar-full.png 1x, assets/avatar-full-2x.png 2x"
+                    alt="Illustrated portrait of Lindsay Lee"
+                    width="144"
+                    height="350"
+                  />
+                </div>
               </div>
             </div>
 
@@ -214,7 +222,7 @@
                 <span class="meta-pair__text">
                   <span class="type-meta-primary">Scroll for my work</span>
                   <span class="type-meta-secondary"
-                    >Reach out for full details</span
+                    >Message for details</span
                   >
                 </span>
               </a>
@@ -563,31 +571,35 @@
         id="contact"
         aria-labelledby="contact-title"
       >
-        <div class="site-footer__thanks">
-          <p class="site-footer__kicker type-sm">If you’ve made it this far...</p>
-          <p class="site-footer__thankyou">
-            <span class="site-footer__word site-footer__word--thank type-display-2"
-              >thank</span
-            >
-            <span class="site-footer__word site-footer__word--you type-display-2"
-              >you</span
-            >
-          </p>
-        </div>
-
-        <div class="site-footer__contact-col">
-          <div class="site-footer__contact-text">
-            <h2 class="site-footer__title type-lrg" id="contact-title">
-              Get in touch
-            </h2>
-            <p class="site-footer__desc type-body">
-              Drop me a line if you have inquiries about my work, or have an
-              interesting project in mind.
+        <div class="site-footer__cta">
+          <div class="site-footer__thanks">
+            <p class="site-footer__kicker type-sm">
+              If you’ve made it this far...
+            </p>
+            <p class="site-footer__thankyou">
+              <span
+                class="site-footer__word site-footer__word--thank type-display-2"
+                >thank</span
+              >
+              <span class="site-footer__word site-footer__word--you type-display-2"
+                >you</span
+              >
             </p>
           </div>
 
-          <!-- glyphs are currentColor so they inherit the footer's text color -->
-          <ul class="site-footer__socials">
+          <div class="site-footer__contact-col">
+            <div class="site-footer__contact-text">
+              <!-- Figma drops the heading from the condensed footer; it stays for
+                   the section's accessible name -->
+              <h2 class="visually-hidden" id="contact-title">Get in touch</h2>
+              <p class="site-footer__desc type-body">
+                Drop a line if you have inquiries about my work, or have an
+                interesting project in mind.
+              </p>
+            </div>
+
+            <!-- glyphs are currentColor so they inherit the footer's text color -->
+            <ul class="site-footer__socials">
             <li>
               <a
                 class="social-icon"
@@ -646,24 +658,141 @@
                 </svg>
               </a>
             </li>
-          </ul>
+            </ul>
+          </div>
         </div>
-      </section>
 
-      <!-- Game (catch the stars) — placeholder stage; mechanics land at M8 -->
-      <section class="game" id="game" aria-labelledby="game-prompt">
-        <div class="game__stage">
-          <p class="game__prompt type-sm" id="game-prompt">
-            Click or press “space” to play
-          </p>
-          <img
-            class="game__avatar"
-            src="assets/mini-me.png"
-            alt=""
-            width="68"
-            height="82"
-          />
-        </div>
+        <!-- Game (catch the stars) — mechanics in js/game.js -->
+        <section class="game" id="game" aria-labelledby="game-title">
+          <h2 class="visually-hidden" id="game-title">Catch the stars</h2>
+
+          <div class="game__stage" data-game data-game-state="idle">
+            <div class="game__scenery" aria-hidden="true">
+              <img
+                class="game__cloud game__cloud--values"
+                src="assets/flower-values.png"
+                alt=""
+                width="116"
+                height="44"
+                decoding="async"
+              />
+              <img
+                class="game__cloud game__cloud--side"
+                src="assets/flower-side.png"
+                alt=""
+                width="162"
+                height="60"
+                decoding="async"
+              />
+              <img
+                class="game__cloud game__cloud--projects"
+                src="assets/flower-projects.png"
+                alt=""
+                width="162"
+                height="136"
+                decoding="async"
+              />
+              <img
+                class="game__cloud game__cloud--header"
+                src="assets/flower-header.png"
+                alt=""
+                width="160"
+                height="160"
+                decoding="async"
+              />
+              <div class="game__ground"></div>
+            </div>
+
+            <canvas
+              class="game__canvas"
+              data-game-canvas
+              tabindex="0"
+              role="img"
+              aria-label="Catch the stars play field. Move with the left and right arrow keys, or drag. Escape quits."
+            ></canvas>
+
+            <button
+              class="sound-toggle game__sound"
+              type="button"
+              data-sound-toggle
+              aria-pressed="false"
+              aria-label="Sound off"
+              title="Sound"
+            >
+              <img
+                class="sound-toggle__img sound-toggle__img--off"
+                src="assets/icon-sound-off.svg"
+                alt=""
+                width="18"
+                height="18"
+                data-sound-off
+              />
+              <img
+                class="sound-toggle__img sound-toggle__img--on"
+                src="assets/icon-sound-on.svg"
+                alt=""
+                width="18"
+                height="18"
+                hidden
+                data-sound-on
+              />
+            </button>
+
+            <div class="game__hud" data-game-hud>
+              <div class="game__stat">
+                <span class="game__stat-label type-meta-primary">Score</span>
+                <span class="game__stat-value type-meta-secondary" data-game-score
+                  >000</span
+                >
+              </div>
+              <div class="game__stat">
+                <span class="game__stat-label type-meta-primary">Best</span>
+                <span class="game__stat-value type-meta-secondary" data-game-best
+                  >000</span
+                >
+              </div>
+            </div>
+
+            <div class="game__play-hint" data-game-play-hint hidden>
+              <p class="game__play-hint-title type-sm">
+                Scroll or tap — catch the stars
+              </p>
+              <p class="game__play-hint-sub type-body">You have 3 chances.</p>
+            </div>
+
+            <div class="game__overlay" data-game-overlay>
+              <button class="game__start" type="button" data-game-start>
+                <span class="game__prompt type-sm" data-game-message>
+                  Click or tap to play
+                </span>
+                <span class="game__idle-figure" data-game-idle-figure>
+                  <img
+                    class="game__star"
+                    src="assets/icon-star.png"
+                    alt=""
+                    width="23"
+                    height="23"
+                  />
+                  <img
+                    class="game__avatar"
+                    src="assets/mini-me.png"
+                    alt=""
+                    width="68"
+                    height="82"
+                  />
+                </span>
+                <span class="game__hint type-body" data-game-hint></span>
+              </button>
+            </div>
+
+            <p
+              class="visually-hidden"
+              role="status"
+              aria-live="polite"
+              data-game-status
+            ></p>
+          </div>
+        </section>
       </section>
 
       <div class="site-footer__legal">
