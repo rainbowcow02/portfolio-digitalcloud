@@ -25,11 +25,26 @@ body.is-nav-open .hero__border {
   z-index: 150;
 }
 
+/* Parallax contract, shared by every flower in every section.
+   js/motion.js writes ONLY --p (scroll progress through the section, -1 → 1).
+   All geometry — base offset, drift amplitude, rotation — stays here in CSS, so it
+   stays responsive. Do NOT let GSAP tween `transform` on these: GSAP resolves the
+   computed matrix and writes an inline transform, which outranks the stylesheet
+   forever and would permanently defeat the mobile overrides below.
+
+   (Aside: mix-blend-mode: multiply is close to a no-op today — the backdrops are
+   white or transparent. It only does real work where a flower crosses the snow panel
+   in .side-quests. Give any section a background colour and the flowers will visibly
+   change for no obvious reason.) */
 .flower-decor {
   position: absolute;
   z-index: 0;
   pointer-events: none;
   user-select: none;
+  --p: 0;
+  --base-y: 0px;
+  --drift: 0px;
+  transform: translateY(calc(var(--base-y) + var(--p) * var(--drift)));
 }
 
 .flower-decor--header {
@@ -37,7 +52,10 @@ body.is-nav-open .hero__border {
   right: -5%;
   width: min(600px, 52vw);
   height: auto;
-  transform: translateY(50%) rotate(-5deg);
+  --base-y: 50%;
+  --drift: 90px;
+  transform: translateY(calc(var(--base-y) + var(--p) * var(--drift)))
+    rotate(-5deg);
   mix-blend-mode: multiply;
   opacity: 0.95;
 }
@@ -66,6 +84,15 @@ body.is-nav-open .hero__border {
   margin-left: calc(90px - var(--page-inset));
 }
 
+/* Entrance-only stage for the avatar. Exists purely so GSAP has a transform to own:
+   the pop overshoots past its resting position, and if it drove .hero__avatar the
+   inline transform it leaves behind would permanently outrank the :hover rule below. */
+.hero__avatar-pop {
+  flex-shrink: 0;
+}
+
+/* Hovering cycles the pose (js/motion.js swaps the img src). The tilt and scale give
+   the container life the instant the cursor lands, before the first pose swap. */
 .hero__avatar {
   position: relative;
   flex-shrink: 0;
@@ -75,6 +102,12 @@ body.is-nav-open .hero__border {
   overflow: hidden;
   background-color: var(--lavender);
   box-shadow: none;
+  cursor: pointer;
+  transition: transform var(--duration-med) var(--ease-out);
+}
+
+.hero__avatar:hover {
+  transform: scale(var(--avatar-hover-scale)) rotate(var(--avatar-hover-tilt));
 }
 
 .hero__avatar-img {
@@ -116,7 +149,8 @@ body.is-nav-open .hero__border {
   color: var(--color-text-primary);
 }
 
-/* Company names — semibold + lilac underline (always on; grows on focus/hover) */
+/* Company names — semibold + lilac underline that swells into a highlighter stroke
+   on hover. The ink grows up behind the text; the text itself never moves. */
 .company-link {
   position: relative;
   display: inline;
@@ -129,13 +163,13 @@ body.is-nav-open .hero__border {
   );
   background-position: left 100%;
   background-repeat: no-repeat;
-  background-size: 100% 2px;
+  background-size: 100% var(--link-underline-rest);
   transition: background-size var(--duration-med) var(--ease-out);
 }
 
 .company-link:hover,
 .company-link:focus-visible {
-  background-size: 100% 3px;
+  background-size: 100% var(--link-underline-hover-inline);
 }
 
 /* Masthead + meta */
@@ -149,7 +183,36 @@ body.is-nav-open .hero__border {
 .hero__name {
   margin: 0;
   max-width: 100%;
+  /* Note: this stops working once js/motion.js splits the name into per-word
+     inline-blocks — atomic inlines offer no break opportunity inside a word. The
+     splitter measures for overflow afterwards and reverts to plain text if
+     "Lindsay" no longer fits, which restores this rule. */
   overflow-wrap: anywhere;
+}
+
+/* Per-word mask for the letter reveal. Only exists after js/motion.js splits the h1. */
+.hero__name .word {
+  display: inline-block;
+  overflow: hidden;
+  /* an inline-block with overflow != visible takes its baseline from its bottom
+     margin edge (CSS 2.1 §10.8.1), which would drop the whole h1 the instant JS
+     runs. Pinning vertical-align makes the baseline deterministic instead. */
+  vertical-align: top;
+  /* grow the mask past the descender in "Lindsay" without moving layout */
+  padding-bottom: var(--name-mask-pad);
+  margin-bottom: calc(-1 * var(--name-mask-pad));
+}
+
+.hero__name .char {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* Start state: parked fully below the mask. Gated so a failed GSAP load leaves the
+   name visible. 110% would leave a sliver of tall glyphs showing above the mask edge
+   now that the mask is padded — this clears it exactly. */
+html.js-motion .hero__name .char {
+  transform: translateY(calc(100% + var(--name-mask-pad)));
 }
 
 .hero__meta {
@@ -199,7 +262,9 @@ body.is-nav-open .hero__border {
   .flower-decor--header {
     right: -9%;
     width: clamp(260px, 70vw, 340px);
-    transform: translateY(38%) rotate(-5deg);
+    /* the transform above is untouched — only the tokens feeding it change */
+    --base-y: 38%;
+    --drift: 40px;
   }
 
   .hero__inner {
@@ -259,7 +324,18 @@ body.is-nav-open .hero__border {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .company-link {
+  .company-link,
+  .hero__avatar {
     transition: none;
+  }
+
+  .hero__avatar:hover {
+    transform: none;
+  }
+
+  /* the link still needs a visible hover affordance — it just arrives instantly */
+  .company-link:hover,
+  .company-link:focus-visible {
+    background-size: 100% 3px;
   }
 }

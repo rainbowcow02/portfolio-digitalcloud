@@ -10,6 +10,14 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Inclusive+Sans:wght@400;700&display=swap"
       rel="stylesheet"
     />
+    <!-- Gates the reveal animations' `opacity: 0` start state. Blocking on purpose:
+         it must run before first paint or hidden elements flash in. If JS is off,
+         or motion is reduced, the class is never added and everything stays visible. -->
+    <script>
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.documentElement.classList.add("js-motion");
+      }
+    </script>
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/typography.css" />
     <link rel="stylesheet" href="css/base.css" />
@@ -133,23 +141,31 @@
 
         <div class="hero__inner">
           <div class="hero__intro">
-            <div class="hero__avatar">
-              <img
-                class="hero__avatar-img"
-                src="assets/Avatar.png"
-                alt="Illustrated portrait of Lindsay Lee"
-                width="144"
-                height="144"
-              />
+            <!-- The entrance pop lives on this wrapper, not on .hero__avatar and not
+                 on the img: GSAP leaves an inline transform behind, which would
+                 outrank the container's :hover transform, and the container's
+                 circular overflow:hidden would clip an img that moved inside it. -->
+            <div class="hero__avatar-pop" data-hero-reveal="avatar">
+              <!-- data-poses drives the hover cycle in js/motion.js. Add a pose by
+                   appending its path here — no JS change needed. -->
+              <div class="hero__avatar" data-poses="assets/Avatar.png">
+                <img
+                  class="hero__avatar-img"
+                  src="assets/Avatar.png"
+                  alt="Illustrated portrait of Lindsay Lee"
+                  width="144"
+                  height="144"
+                />
+              </div>
             </div>
 
             <div class="hero__bio">
-              <p class="hero__tagline">
+              <p class="hero__tagline" data-hero-reveal="bio">
                 I’m a product designer who crafts simple tools for a complex
                 world.
               </p>
               <div class="hero__copy">
-                <p>
+                <p data-hero-reveal="bio">
                   Over 6.5+ years, I’ve shaped products at
                   <a class="company-link" href="#work">DoorDash</a>,
                   <a class="company-link" href="#work">Apple</a>,
@@ -159,7 +175,7 @@
                   making tools that feel effortless and crafted with care—with a
                   hint of play.
                 </p>
-                <p>
+                <p data-hero-reveal="bio">
                   Outside of work, I find the same satisfaction in a perfectly
                   dialed in light roast pour over.
                 </p>
@@ -171,7 +187,11 @@
             <h1 class="hero__name type-display-1">Lindsay Lee</h1>
 
             <div class="hero__meta">
-              <a class="meta-pair meta-pair--scroll" href="#work">
+              <a
+                class="meta-pair meta-pair--scroll"
+                href="#work"
+                data-hero-reveal="meta"
+              >
                 <svg
                   class="meta-pair__arrow"
                   width="24"
@@ -199,7 +219,7 @@
                 </span>
               </a>
 
-              <div class="meta-pair">
+              <div class="meta-pair" data-hero-reveal="meta">
                 <span class="type-meta-primary">Based in NYC</span>
                 <span class="type-meta-secondary">40.7128, -74.0060</span>
               </div>
@@ -229,9 +249,11 @@
         />
 
         <div class="work__inner">
-          <h2 class="work__title type-lrg" id="work-title">Snapshots of my work</h2>
+          <h2 class="work__title type-lrg" id="work-title" data-reveal>
+            Snapshots of my work
+          </h2>
 
-          <article class="project">
+          <article class="project" data-reveal>
             <div class="project__text">
               <p class="project__meta">
                 <span class="type-meta-primary">DoorDash</span>
@@ -251,7 +273,7 @@
             </div>
           </article>
 
-          <article class="project">
+          <article class="project" data-reveal>
             <div class="project__text">
               <p class="project__meta">
                 <span class="type-meta-primary">Fleetsmith</span>
@@ -270,7 +292,7 @@
             </div>
           </article>
 
-          <article class="project">
+          <article class="project" data-reveal>
             <div class="project__text">
               <p class="project__meta">
                 <span class="type-meta-primary">Fleetsmith</span>
@@ -290,7 +312,7 @@
             </div>
           </article>
 
-          <article class="project">
+          <article class="project" data-reveal>
             <div class="project__text">
               <p class="project__meta">
                 <span class="type-meta-primary">Apple</span>
@@ -308,7 +330,7 @@
             </div>
           </article>
 
-          <article class="project">
+          <article class="project" data-reveal>
             <div class="project__text">
               <p class="project__meta">
                 <span class="type-meta-primary">DoorDash</span>
@@ -344,7 +366,7 @@
         />
 
         <div class="side-quests__inner">
-          <div class="side-quests__header">
+          <div class="side-quests__header" data-reveal>
             <h2 class="side-quests__title type-lrg" id="side-title">Side quests</h2>
             <p class="side-quests__desc type-body">
               Personal projects I’m building. Making things with a lot of
@@ -352,8 +374,12 @@
             </p>
           </div>
 
-          <div class="side-quests__list">
-            <article class="side-quest">
+          <div
+            class="side-quests__list"
+            data-reveal-group
+            data-reveal-stagger="0.09"
+          >
+            <article class="side-quest" data-reveal-item>
               <div class="side-quest__img"></div>
               <div class="side-quest__text">
                 <p class="side-quest__meta">
@@ -368,7 +394,7 @@
               </div>
             </article>
 
-            <article class="side-quest">
+            <article class="side-quest" data-reveal-item>
               <div class="side-quest__img"></div>
               <div class="side-quest__text">
                 <p class="side-quest__meta">
@@ -383,7 +409,7 @@
               </div>
             </article>
 
-            <article class="side-quest">
+            <article class="side-quest" data-reveal-item>
               <div class="side-quest__img"></div>
               <div class="side-quest__text">
                 <p class="side-quest__meta">
@@ -413,15 +439,15 @@
         />
 
         <div class="values__inner">
-          <div class="values__header">
+          <div class="values__header" data-reveal>
             <h2 class="values__title type-lrg" id="values-title">Design values</h2>
             <p class="values__desc type-subtitle">
               Principles I lead with—either learned or adopted from smart people.
             </p>
           </div>
 
-          <div class="values__list">
-            <article class="value">
+          <div class="values__list" data-reveal-group data-reveal-stagger="0.07">
+            <article class="value" data-reveal-item>
               <img
                 class="value__star"
                 src="assets/icon-star.svg"
@@ -439,7 +465,7 @@
               </div>
             </article>
 
-            <article class="value">
+            <article class="value" data-reveal-item>
               <img
                 class="value__star"
                 src="assets/icon-star.svg"
@@ -457,7 +483,7 @@
               </div>
             </article>
 
-            <article class="value">
+            <article class="value" data-reveal-item>
               <img
                 class="value__star"
                 src="assets/icon-star.svg"
@@ -475,7 +501,7 @@
               </div>
             </article>
 
-            <article class="value">
+            <article class="value" data-reveal-item>
               <img
                 class="value__star"
                 src="assets/icon-star.svg"
@@ -490,7 +516,7 @@
               </div>
             </article>
 
-            <article class="value">
+            <article class="value" data-reveal-item>
               <img
                 class="value__star"
                 src="assets/icon-star.svg"
@@ -508,7 +534,7 @@
               </div>
             </article>
 
-            <article class="value">
+            <article class="value" data-reveal-item>
               <img
                 class="value__star"
                 src="assets/icon-star.svg"
@@ -651,6 +677,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
     <script type="module" src="js/main.js"></script>
   </body>
 </html>
