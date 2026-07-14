@@ -264,6 +264,10 @@ body.is-nav-open {
 }
 
 @media (max-width: 767px) {
+  .site-header {
+    padding-top: var(--space-6);
+  }
+
   .site-header__menu-toggle {
     display: inline-flex;
   }

@@ -204,7 +204,7 @@ body.is-nav-open .hero__border {
 
   .hero__inner {
     padding:
-      calc(var(--header-height) + var(--space-6))
+      calc(var(--header-height) + var(--space-10))
       var(--page-inset)
       var(--space-10);
     gap: var(--space-10);

@@ -111,3 +111,11 @@
   --duration-med: 320ms;
   --duration-slow: 700ms;
 }
+
+/* the header is fixed, so anything sitting below it pads by --header-height;
+   keep this equal to the header's rendered box (padding + 40px icon + padding) */
+@media (max-width: 767px) {
+  :root {
+    --header-height: 76px;
+  }
+}
