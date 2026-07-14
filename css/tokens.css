@@ -1,0 +1,103 @@
+/* Primitive → semantic design tokens. Components reference semantic tokens only. */
+
+:root {
+  /* ——— Color primitives ——— */
+  --white: #ffffff;
+  --black: #000000;
+  --grey: #797979;
+  --snow: #fcf8f8;
+  --lavender: #fae9ff;
+  --mauve: #fbeaff;
+  --periwinkle: #d7e3ff;
+  --peach: #f5e3dd;
+  --lilac: #e8c5f2;
+  --surface-muted: #f3f3f5;
+  --icon-placeholder: #d9d9d9;
+  --sound-bg: #edd9f1;
+  --sound-tint: rgba(184, 17, 255, 0.1);
+
+  /* ——— Color semantic ——— */
+  --color-text-primary: var(--black);
+  --color-text-secondary: var(--grey);
+  --color-bg: var(--white);
+  --color-bg-alt: var(--snow);
+  --color-accent: var(--lavender);
+  --color-accent-strong: var(--lilac);
+  --color-border: rgba(0, 0, 0, 0.1);
+  --color-border-soft: rgba(0, 0, 0, 0.04);
+  --color-link: var(--black);
+  --color-link-hover: var(--black);
+  --color-link-underline: var(--lilac);
+  --color-focus-ring: var(--lilac);
+  --color-page-border: var(--mauve);
+  --color-sound-bg: var(--sound-bg);
+  --color-sound-tint: var(--sound-tint);
+  --color-nav-overlay: var(--snow);
+  --color-nav-scrim: rgba(0, 0, 0, 0.08);
+
+  /* ——— Spacing (4px scale) ——— */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-9: 36px;
+  --space-10: 40px;
+  --space-11: 44px;
+  --space-12: 48px;
+  --space-13: 52px;
+  --space-14: 56px;
+  --space-15: 60px;
+  --space-16: 64px;
+  --space-18: 72px;
+  --space-20: 80px;
+  --space-23: 92px; /* Figma 90 → round up */
+  --space-25: 100px;
+  --space-33: 132px; /* Figma 130 → round up */
+  --space-40: 160px;
+
+  /* ——— Type families ——— */
+  --font-display: "Inclusive Sans", sans-serif;
+  --font-body: "IBM Plex Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  /* ——— Type sizes (desktop defaults; fluid where noted) ——— */
+  --text-display-1: clamp(3.75rem, 2.5rem + 8vw, 11.25rem); /* 60 → 180 */
+  --text-display-2: clamp(6rem, 4rem + 6vw, 9.375rem); /* 96 → 150 */
+  --text-lrg: 2.25rem; /* 36 */
+  --text-sm: 1.1875rem; /* 19 */
+  --text-subtitle: 1.125rem; /* 18 */
+  --text-body: 1rem; /* 16 */
+  --text-link: 0.9375rem; /* 15 */
+  --text-meta-primary: 0.875rem; /* 14 */
+  --text-meta-secondary: 0.8125rem; /* 13 */
+  --text-meta-primary-mobile: 0.75rem; /* 12 */
+  --text-meta-secondary-mobile: 0.625rem; /* 10 */
+
+  /* ——— Letter-spacing ——— */
+  --tracking-display-1: -0.04em;
+  --tracking-display-1-mobile: -0.06em;
+  --tracking-display-2: -0.04em;
+  --tracking-lrg: -0.01em;
+  --tracking-sm: -0.01em;
+  --tracking-subtitle: 0.01em;
+  --tracking-body: 0.01em;
+  --tracking-link: 0;
+  --tracking-meta: -0.01em;
+
+  /* ——— Radii / misc ——— */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --page-border-width: 16px;
+  --header-height: 64px;
+  --breakpoint-desktop: 768px;
+
+  /* ——— Motion ——— */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 180ms;
+  --duration-med: 320ms;
+  --duration-slow: 700ms;
+}
