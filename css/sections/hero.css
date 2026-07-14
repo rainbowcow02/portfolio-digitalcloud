@@ -20,6 +20,11 @@
   pointer-events: none;
 }
 
+/* while the nav drawer is open, drop the frame under the drawer (200) and its header (210) */
+body.is-nav-open .hero__border {
+  z-index: 150;
+}
+
 .flower-decor {
   position: absolute;
   z-index: 0;
