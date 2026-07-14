@@ -5,7 +5,7 @@
 .work {
   position: relative;
   isolation: isolate;
-  padding: var(--space-33) var(--space-9);
+  padding: var(--space-33) var(--page-inset);
 }
 
 .work__inner {
@@ -101,7 +101,7 @@
 
 @media (max-width: 767px) {
   .work {
-    padding: var(--space-20) var(--space-9);
+    padding: var(--space-20) var(--page-inset);
   }
 
   .work__inner {

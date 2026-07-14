@@ -98,6 +98,10 @@
   --radius-sm: 6px;
   --radius-md: 8px;
   --page-border-width: 16px;
+  /* the page frame is fixed over the viewport edge, so a section's inset has to
+     add it back in to leave --page-gutter of air between frame and content */
+  --page-gutter: var(--space-8);
+  --page-inset: calc(var(--page-border-width) + var(--page-gutter));
   --header-height: 64px;
   --breakpoint-desktop: 768px;
 
