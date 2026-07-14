@@ -1,7 +1,7 @@
 /* ——— Site header / nav ——— */
 
 .site-header {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -19,7 +19,6 @@
 }
 
 .site-header.is-sticky {
-  position: fixed;
   background-color: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);

@@ -30,6 +30,11 @@
   --color-link-underline: var(--lilac);
   --color-focus-ring: var(--lilac);
   --color-page-border: var(--mauve);
+  --gradient-page-border: linear-gradient(
+    135deg,
+    var(--mauve) 0%,
+    var(--periwinkle) 100%
+  );
   --color-sound-bg: var(--sound-bg);
   --color-sound-tint: var(--sound-tint);
   --color-nav-overlay: var(--snow);

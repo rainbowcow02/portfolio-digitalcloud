@@ -10,10 +10,13 @@
 }
 
 .hero__border {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  z-index: 4;
+  z-index: 90;
+  height: 100vh;
+  height: 100dvh;
   border: var(--page-border-width) solid var(--color-page-border);
+  border-image: var(--gradient-page-border) 1;
   pointer-events: none;
 }
 
