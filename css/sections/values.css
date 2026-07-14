@@ -18,11 +18,13 @@
   margin: 0 auto;
 }
 
-/* Decor — flower sits behind the content, cresting the section's top edge */
+/* Decor — flower sits behind the content, cresting the section's top edge.
+   Already small at its 260px design size, so it holds a 220px floor instead of
+   tracking the viewport all the way down */
 .flower-decor--values {
   top: calc(-1 * var(--space-10));
   left: 3%;
-  width: min(260px, 18vw);
+  width: clamp(220px, 18vw, 260px);
   height: auto;
   mix-blend-mode: multiply;
 }
