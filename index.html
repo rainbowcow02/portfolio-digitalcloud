@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/sections/nav.css" />
     <link rel="stylesheet" href="css/sections/hero.css" />
+    <link rel="stylesheet" href="css/sections/work.css" />
   </head>
   <body>
     <header class="site-header" data-site-header>
@@ -203,8 +204,132 @@
         </div>
       </section>
 
-      <!-- Temporary spacer until M4 Work lands — keeps sticky nav testable -->
-      <div class="page-spacer" id="work" aria-hidden="true"></div>
+      <section class="work" id="work" aria-labelledby="work-title">
+        <img
+          class="flower-decor flower-decor--snapshots"
+          src="assets/flower-snapshots.png"
+          alt=""
+          width="333"
+          height="122"
+          loading="lazy"
+          decoding="async"
+        />
+        <img
+          class="flower-decor flower-decor--projects"
+          src="assets/flower-projects.png"
+          alt=""
+          width="655"
+          height="550"
+          loading="lazy"
+          decoding="async"
+        />
+
+        <div class="work__inner">
+          <h2 class="work__title type-lrg" id="work-title">Snapshots of my work</h2>
+
+          <article class="project">
+            <div class="project__text">
+              <p class="project__meta">
+                <span class="type-meta-primary">DoorDash</span>
+                <span class="type-meta-secondary">2022</span>
+              </p>
+              <h3 class="project__name type-sm">Grocery Substitutions</h3>
+              <p class="project__desc type-body">
+                I led design for {Project}, a thing for people to do something. I
+                defined the thing, extended capabilities in a new way, and shipped
+                features like x, y, z. Launched at {when}.
+              </p>
+            </div>
+            <div class="project__imgs">
+              <div class="project__img"></div>
+              <div class="project__img"></div>
+              <div class="project__img"></div>
+            </div>
+          </article>
+
+          <article class="project">
+            <div class="project__text">
+              <p class="project__meta">
+                <span class="type-meta-primary">Fleetsmith</span>
+                <span class="type-meta-secondary">2019</span>
+              </p>
+              <h3 class="project__name type-sm">Custom Apps</h3>
+              <p class="project__desc type-body">
+                I led design for {Project}, a thing for people to do something. I
+                defined the thing, extended capabilities in a new way, and shipped
+                features like x, y, z. Launched at {when}.
+              </p>
+            </div>
+            <div class="project__imgs">
+              <div class="project__img"></div>
+              <div class="project__img"></div>
+            </div>
+          </article>
+
+          <article class="project">
+            <div class="project__text">
+              <p class="project__meta">
+                <span class="type-meta-primary">Fleetsmith</span>
+                <span class="type-meta-secondary">2019–2020</span>
+              </p>
+              <h3 class="project__name type-sm">iOS Strategy</h3>
+              <p class="project__desc type-body">
+                I led design for {Project}, a thing for people to do something. I
+                defined the thing, extended capabilities in a new way, and shipped
+                features like x, y, z. Launched at {when}.
+              </p>
+            </div>
+            <div class="project__imgs">
+              <div class="project__img"></div>
+              <div class="project__img"></div>
+              <div class="project__img"></div>
+            </div>
+          </article>
+
+          <article class="project">
+            <div class="project__text">
+              <p class="project__meta">
+                <span class="type-meta-primary">Apple</span>
+                <span class="type-meta-secondary">2021</span>
+              </p>
+              <h3 class="project__name type-sm">Apple Business Essentials</h3>
+              <p class="project__desc type-body">
+                I led design for {Project}, a thing for people to do something. I
+                defined the thing, extended capabilities in a new way, and shipped
+                features like x, y, z. Launched at {when}.
+              </p>
+            </div>
+            <div class="project__imgs">
+              <div class="project__img"></div>
+            </div>
+          </article>
+
+          <article class="project">
+            <div class="project__text">
+              <p class="project__meta">
+                <span class="type-meta-primary">DoorDash</span>
+                <span class="type-meta-secondary">2022</span>
+              </p>
+              <h3 class="project__name type-sm">
+                Vision to improve Customer-Dasher communication
+              </h3>
+              <p class="project__desc type-body">
+                I led design for {Project}, a thing for people to do something. I
+                defined the thing, extended capabilities in a new way, and shipped
+                features like x, y, z. Launched at {when}.
+              </p>
+            </div>
+            <div class="project__imgs">
+              <div class="project__img"></div>
+              <div class="project__img"></div>
+              <div class="project__img"></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Temporary spacer until Side quests (M5) lands -->
+      <div class="page-spacer" id="side" aria-hidden="true"></div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>

@@ -1,0 +1,146 @@
+/* ——— Work / Snapshots of my work ——— */
+
+/* no background of its own — the body colour shows through so the hero flower can
+   spill down into this section while the content still paints over it */
+.work {
+  position: relative;
+  isolation: isolate;
+  padding: var(--space-33) var(--space-9);
+}
+
+.work__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-23);
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.work__title {
+  margin: 0;
+  text-align: center;
+}
+
+/* Decor — flowers sit behind the content */
+.flower-decor--snapshots {
+  top: var(--space-20);
+  left: 10%;
+  width: min(333px, 24vw);
+  height: auto;
+  mix-blend-mode: multiply;
+}
+
+.flower-decor--projects {
+  top: 60%;
+  left: -18%;
+  width: min(655px, 46vw);
+  height: auto;
+  mix-blend-mode: multiply;
+}
+
+/* ——— ProjectBlock ——— */
+
+.project {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+}
+
+.project__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 650px;
+  max-width: 100%;
+}
+
+.project__meta {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  white-space: nowrap;
+}
+
+.project__name {
+  margin: 0;
+}
+
+.project__desc {
+  margin: 0;
+}
+
+.project__imgs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4); /* Figma 15 → round up */
+  width: 100%;
+}
+
+.project__img {
+  flex: 1 0 0;
+  min-width: 0;
+  max-width: 600px;
+  aspect-ratio: 383 / 287;
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-muted);
+  transition: transform var(--duration-med) var(--ease-out);
+}
+
+.project__img:hover {
+  transform: translateY(-4px);
+}
+
+/* ——— Mobile ≤767px ——— */
+
+@media (max-width: 767px) {
+  .work {
+    padding: var(--space-20) var(--space-9);
+  }
+
+  .work__inner {
+    gap: var(--space-16);
+  }
+
+  .flower-decor--snapshots {
+    top: var(--space-25);
+    left: -4%;
+    width: clamp(140px, 41vw, 160px);
+  }
+
+  /* top / left inherited from desktop — only the size scales down */
+  .flower-decor--projects {
+    width: clamp(240px, 62vw, 300px);
+  }
+
+  .project__text {
+    width: 100%;
+  }
+
+  /* Stacked image rows — full-width, one per row */
+  .project__imgs {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .project__img {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project__img {
+    transition: none;
+  }
+
+  .project__img:hover {
+    transform: none;
+  }
+}

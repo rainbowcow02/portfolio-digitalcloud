@@ -98,7 +98,7 @@ p {
   border: 0;
 }
 
-/* Temporary spacer until Work (M4) lands — keeps sticky nav / scroll target testable */
+/* Temporary spacer until Side quests (M5) lands — keeps sticky nav / scroll target testable */
 .page-spacer {
   min-height: 80vh;
   background-color: var(--color-bg);

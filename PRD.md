@@ -158,7 +158,7 @@ portfolio-digitalcloud/
 │   └── sections/
 │       ├── nav.css
 │       ├── hero.css
-│       ├── work.css          # pending
+│       ├── work.css
 │       ├── side-quests.css   # pending
 │       ├── values.css        # pending
 │       ├── footer.css        # pending
@@ -187,7 +187,7 @@ Build **section by section**. Do not advance until the current section passes ve
 | **M1** | Design tokens + base + typography | ✅ Done | `tokens.css`, `typography.css`, `base.css` |
 | **M2** | Nav | ✅ Done | Sticky header; desktop links; mobile hamburger→X morph; L→R drawer open / R→L close; parallel content fade on close; sound UI only; Resume URL; drawer covers sound (no sound fade) |
 | **M3** | Hero | ✅ Done | Avatar, bio + lilac company links, Display-1, meta, flowers, page border |
-| **M4** | Work grid | ⬜ Pending | Section header + project blocks; image placeholders; responsive stacking |
+| **M4** | Work grid | ✅ Done | Section header + 5 project blocks (3/2/3/1/3 imgs); grey placeholders; images stack on mobile; snapshots + projects flowers |
 | **M5** | Side quests | ⬜ Pending | 3 cards; snow background; flowers |
 | **M6** | Design values | ⬜ Pending | 2-col → stack; all 6 values; star icons |
 | **M7** | Footer + contact | ⬜ Pending | thank you, Get in touch, social placeholders, legal row |
@@ -252,7 +252,8 @@ Stop: `Ctrl+C` in the terminal where the server is running.
 | 2026-07-13 | Close: parallel content fade; removed menu “Based in NYC”; drawer covers sound without sound fade animation |
 | 2026-07-13 | PRD authored |
 | 2026-07-13 | M3 Hero: avatar + bio, lilac company underlines, Display-1, meta pairs, flower decor, mauve page border; responsive stack |
+| 2026-07-13 | M4 Work: “Snapshots of my work” + 5 ProjectBlocks; flex image rows (3/2/3/1/3) at 383×287 aspect; images stack full-width on mobile; hover lift; snapshots + projects flowers. Work has no background of its own, so the header flower spills past the hero into Work while Work's content still paints over it |
 
 ---
 
-*Next up: **M4 — Work grid**.*
+*Next up: **M5 — Side quests**.*
