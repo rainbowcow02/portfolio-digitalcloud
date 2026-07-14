@@ -1,6 +1,6 @@
 # Motion & microinteraction plan
 
-Status: **built and verified**, except the avatar poses.
+Status: **built and verified**, except the avatar poses. §6 (header retraction) was added after the original M9 scope and is also built and verified.
 
 **Outstanding: 3–4 avatar pose PNGs** at the same 215×215 crop as `assets/Avatar.png`.
 The cycling machinery is live and asset-agnostic — it reads `data-poses` on
@@ -200,6 +200,50 @@ Add `ScrollTrigger.config({ ignoreMobileResize: true })` from day one — `.hero
 
 ---
 
+## 6. Header retraction
+
+The page frame already claims 16px + safe-area on every edge, and the fixed header claims 74–76px more at the top. So the header retracts on scroll-down and returns on scroll-up, leaving the frame as the only permanent chrome. Built in `js/nav.js` (**not** `motion.js`) as a CSS class toggle — no GSAP, no second rAF loop, and no dependency on ScrollTrigger having loaded. If the GSAP CDN dies, `initNav()` bails early and the header simply never hides, which is the safe failure.
+
+**It extends the one passive `scroll` listener that already drove `.is-sticky`**, rAF-coalesced, rather than adding a second.
+
+### Direction hysteresis is the whole thing
+
+Never act on a single event's delta. `onScroll` accumulates travel in the current direction and zeroes the accumulator whenever the direction flips: **12px** of downward travel to retract, **6px** of upward travel to return. Without this, trackpad jitter and iOS momentum wobble flip the header several times a second and it reads as broken. The asymmetry is deliberate — leaving should feel considered, returning should feel eager.
+
+Force-show cases outrank the delta logic entirely: drawer open, reduced motion, within 120px of the top, and during an anchor scroll. At the **bottom** of the document the header *holds* whatever state it's in — rubber-banding at the extreme fabricates deltas in both directions, and neither should be allowed to flip it.
+
+### The fade is the exit — the transform is not
+
+**The single most counterintuitive thing here.** The header animates `opacity` and `transform` together, and the opacity finishes at ~60% of the slide. Once it hits 0 the header is gone; the remaining travel happens unseen. That means:
+
+> **`--duration-chrome-fade` is the number the eye times, not `--duration-chrome-out`. Slowing the transform alone changes nothing anyone can see.**
+
+This was learned the hard way — the exit's transform was doubled with zero perceived effect, because the fade was still bound to the shared `--duration-med`. Keep the fade at roughly 60% of the slide: push it much closer and you start *watching* the header labour off-screen, which reads as sluggish rather than relaxed.
+
+The fade also does real work. The sticky header is an opaque 0.88 white slab, so a pure translate would drag that slab up across the content. Fading it means it dissolves where it stands — the same "content dissolves out of the frame" move as `.hero__border::after`. Fade `opacity`, **never** `backdrop-filter`: blur doesn't interpolate cleanly, but element opacity fades the backdrop-filter result for free and stays composite-only.
+
+### Desktop and mobile get different numbers, on purpose
+
+|  | desktop | mobile (≤767px) |
+|---|---|---|
+| `--duration-chrome-fade` | 560ms | 320ms |
+| `--duration-chrome-out` | 900ms | 620ms |
+| `--duration-chrome-in` | 640ms | 440ms |
+
+Same motion, different *exposure*. A touch fling keeps content ripping past while the header dissolves, camouflaging it. A mouse wheel teleports one notch and stops dead, leaving the identical dissolve fully exposed against a static page — where it looks hurried. Do not collapse these into one compromise set; it suits neither.
+
+Both use `--ease-soft`, not the site's `--ease-out`. `--ease-out` is an expo curve that bolts off the line and decelerates hard: perfect at `--duration-fast` for hovers, but stretched past half a second it reads as "darts, then hangs."
+
+### Two traps
+
+**`--header-height` is wrong on desktop.** It claims `64px`; the header renders at **74px** (the hamburger is `display: none` there, so the 30px sound toggle sets the height, not the 40px icon the token's comment assumes). Mobile's `76px` override is correct. The retraction sidesteps this with `translateY(-100%)` — self-referential, so it's right on every breakpoint and every notch with no number to maintain. Anything that genuinely needs the height reads `--header-h`, which `nav.js` measures onto `:root` via a `ResizeObserver`. **The stale token is still consumed by `hero.css` and is a latent bug.**
+
+**No `visibility: hidden` on the retracted header** — it would pull the nav links out of the tab order and a keyboard user could never reach them. They stay focusable, and a `focusin` listener reveals the header instead.
+
+`html { scroll-padding-top }` (added in `base.css`, reading `--header-h`) fixes a bug that predated all this: with a fixed header and no scroll-padding, anchor targets already landed underneath it.
+
+---
+
 ## Files
 
 | File | Change |
@@ -207,10 +251,11 @@ Add `ScrollTrigger.config({ ignoreMobileResize: true })` from day one — `.hero
 | `js/motion.js` | **new** — `initMotion()`, `splitHeroName()`, `initAvatarPoses()`, `gsap.matchMedia` scopes |
 | `js/main.js` | register `initMotion()` |
 | `index.html` | ScrollTrigger CDN tag; inline `js-motion` head script; `data-reveal` / `data-reveal-group` / `data-hero-reveal` hooks; `data-poses` on the avatar |
-| `css/tokens.css` | motion scale: `--ease-out-expo`, `--ease-spring`, `--duration-xslow`, `--stagger-tight` / `--stagger-loose` |
-| `css/base.css` | `html.js-motion [data-reveal] { opacity: 0 }` gate |
+| `css/tokens.css` | motion scale: `--ease-out-expo`, `--ease-spring`, `--duration-xslow`, `--stagger-tight` / `--stagger-loose`. Later: `--ease-soft` and the `--duration-chrome-*` set (§6), split desktop/mobile |
+| `css/base.css` | `html.js-motion [data-reveal] { opacity: 0 }` gate. Later: `scroll-padding-top` (§6) |
 | `css/sections/hero.css` | `.word` / `.char` mask rules; var-composed flower transform; avatar hover; highlighter on `.company-link` |
-| `css/sections/nav.css` | highlighter treatment on nav links |
+| `css/sections/nav.css` | highlighter treatment on nav links. Later: `.site-header.is-hidden` (§6) |
+| `js/nav.js` | **§6** — hide-on-scroll folded into the existing sticky scroll listener |
 | `css/sections/work.css`, `side-quests.css`, `values.css` | var-composed flower transforms; reveal-safe base styles |
 | `assets/avatar-2…4.png` | **new art needed** |
 
@@ -222,6 +267,8 @@ Add `ScrollTrigger.config({ ignoreMobileResize: true })` from day one — `.hero
 - **Don't remove `html { scroll-behavior: smooth }`** — the nav anchors depend on it. It's harmless alongside scrub/reveal triggers; it only conflicts with `pin`/`snap`, which this plan doesn't use.
 - Every future project image needs `width`/`height` attributes or an `aspect-ratio` box, or it lands late and stales the trigger positions below it. `.project__img` already has `aspect-ratio: 383/287` — keep images inside it.
 - Worth a code comment: `mix-blend-mode: multiply` on the flowers is currently a near-no-op (white/transparent backdrops); it only bites where a flower overlaps the `.side-quests` snow panel. The day anyone gives `.work` a background, the flowers will change appearance for no obvious reason.
+- **Don't reach for a smooth-scroll library to make motion feel calmer.** It comes up because mobile's inertia makes everything read as more blended than a mouse wheel does — but hijacking wheel input across the whole page to fix the pacing of one 74px bar is wildly disproportionate, and it fights the 90-second skim this page exists for. The same feel is reachable by tuning durations (§6). See also the containing-block landmine above: a translate-based library would break the frame outright.
+- **To make a fade + move feel slower, slow the *fade*.** Once opacity reaches 0 the element is gone and any remaining transform runs invisibly, so lengthening the transform alone changes nothing a viewer can perceive. This is not obvious and it has already cost one wasted round (§6).
 
 ---
 
