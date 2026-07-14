@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: space-between;
   min-height: var(--header-height);
-  padding: var(--space-3) var(--space-9);
+  padding: var(--space-6) var(--space-9) var(--space-3);
   background-color: transparent;
   transition:
     background-color var(--duration-med) var(--ease-out),
@@ -164,12 +164,13 @@
 .sound-toggle {
   position: relative;
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  width: var(--space-8);
-  height: var(--space-8);
-  padding: var(--space-1);
-  border-radius: var(--radius-sm);
+  width: 38px;
+  height: 30px;
+  padding: 0 var(--space-1);
+  border-radius: 0;
   background-image:
     linear-gradient(90deg, var(--color-sound-tint), var(--color-sound-tint)),
     linear-gradient(90deg, var(--color-sound-bg), var(--color-sound-bg));
@@ -185,8 +186,8 @@
 }
 
 .sound-toggle__img {
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
 }
 
 /* ——— Mobile overlay (mask reveal) ——— */

@@ -96,8 +96,8 @@ p {
   border: 0;
 }
 
-/* Temporary page spacer so sticky nav can be verified while scrolling */
+/* Temporary spacer until Work (M4) lands — keeps sticky nav / scroll target testable */
 .page-spacer {
-  min-height: 200vh;
-  padding: var(--space-25) var(--space-9);
+  min-height: 80vh;
+  background-color: var(--color-bg);
 }
