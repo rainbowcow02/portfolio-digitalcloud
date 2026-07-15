@@ -5,15 +5,25 @@
  * with score (not elapsed time). Canvas draws the field; DOM owns HUD, scenery,
  * and copy. Idle / playing / over visuals are driven by data-game-state.
  *
- * Loop runs on gsap.ticker while a round is active (MOTION.md: one ticker, not a
- * competing rAF). Falls back to requestAnimationFrame if GSAP didn't load.
- * Fail-safe: missing canvas context or failed sprite load → leave the idle card as-is.
+ * Best score is site-wide (shared across visitors) plus a personal localStorage
+ * floor, so the idle card always has a number to beat. Loop runs on gsap.ticker
+ * while a round is active (MOTION.md: one ticker, not a competing rAF). Falls
+ * back to requestAnimationFrame if GSAP didn't load. Fail-safe: missing canvas
+ * context or failed sprite load → leave the idle card as-is.
  */
 
 import { ensureAudio, isSoundOn, playCatch, playMiss, playGameOver } from "./sound.js";
 
 const BEST_KEY = "ctsBest";
 const LIVES = 3;
+
+/* Shared site record (hobby high-score API). HOUSE_BEST is the floor so a cold
+   board / monthly wipe still shows a challenge. Personal best stays in localStorage. */
+const HOUSE_BEST = 28;
+const SITE_SCORE_ID = "f19f2b7b-cfbd-4b6f-bc1b-5f351e2b19c8";
+const SITE_SCORES_URL = `https://highscore.sasagu.com/api/v1/scores/${SITE_SCORE_ID}`;
+const SITE_ADD_URL = "https://highscore.sasagu.com/api/v1/add-score";
+const SITE_SCORE_CAP = 300; /* reject impossible POSTs from a poked console */
 
 /*
  * Ramp keyed to score. Desktop tops out ~40; mobile keeps climbing to 120 with a
@@ -104,7 +114,9 @@ export function initGame() {
     score: 0,
     misses: 0,
     streak: 0,
-    best: readBest(),
+    personal: readBest(),
+    siteBest: HOUSE_BEST,
+    best: 0,
     spawnIn: 0,
     stars: [],
     sparks: [],
@@ -112,6 +124,7 @@ export function initGame() {
     keys: new Set(),
     resumeMode: null,
   };
+  state.best = Math.max(state.personal, state.siteBest);
 
   let loopAttached = false;
   let last = 0;
@@ -119,6 +132,8 @@ export function initGame() {
 
   setState("idle");
   syncHud();
+  syncIdleTease();
+  refreshSiteBest();
 
   /* ——— Loop shim: GSAP ticker preferred; plain rAF if CDN failed ——— */
 
@@ -249,16 +264,26 @@ export function initGame() {
     setState("over");
     hidePlayHint();
 
-    const isBest = state.score > state.best;
-    if (isBest) {
-      state.best = state.score;
-      writeBest(state.best);
+    const priorBest = state.best;
+    const isBest = state.score > priorBest;
+    const beatsSite = state.score > state.siteBest;
+
+    if (state.score > state.personal) {
+      state.personal = state.score;
+      writeBest(state.personal);
     }
+    if (beatsSite) {
+      state.siteBest = state.score;
+      submitSiteBest(state.score);
+    }
+    state.best = Math.max(state.personal, state.siteBest);
 
     if (isSoundOn()) playGameOver();
 
     message.textContent = isBest
-      ? "New best!"
+      ? beatsSite
+        ? "New site record!"
+        : "New best!"
       : OVER_LINES[Math.floor(Math.random() * OVER_LINES.length)];
     if (hint) hint.textContent = OVER_HINT;
     syncHud();
@@ -504,6 +529,29 @@ export function initGame() {
     if (bestOut) bestOut.textContent = formatScore(state.best);
   }
 
+  /** Idle tease — a visible record makes the card feel worth a try. */
+  function syncIdleTease() {
+    if (!hint || getState() !== "idle") return;
+    hint.textContent =
+      state.best > 0 ? `Best to beat · ${formatScore(state.best)}` : "";
+  }
+
+  async function refreshSiteBest() {
+    const remote = await fetchSiteBest();
+    if (remote > state.siteBest) state.siteBest = remote;
+    /* Promote a pre-existing personal best so other visitors see it too. */
+    if (state.personal > state.siteBest) {
+      state.siteBest = state.personal;
+      submitSiteBest(state.personal);
+    }
+    const next = Math.max(state.personal, state.siteBest, HOUSE_BEST);
+    if (next !== state.best) {
+      state.best = next;
+      syncHud();
+      syncIdleTease();
+    }
+  }
+
   function say(text) {
     if (status) status.textContent = text;
   }
@@ -615,5 +663,36 @@ function writeBest(value) {
     localStorage.setItem(BEST_KEY, String(value));
   } catch {
     /* Safari private mode throws — ignore */
+  }
+}
+
+async function fetchSiteBest() {
+  try {
+    const res = await fetch(SITE_SCORES_URL, { cache: "no-store" });
+    if (!res.ok) return HOUSE_BEST;
+    const data = await res.json();
+    const top = Number(data.top_score) || 0;
+    return Math.max(top, HOUSE_BEST);
+  } catch {
+    return HOUSE_BEST;
+  }
+}
+
+async function submitSiteBest(score) {
+  const n = Number(score);
+  if (!n || n < 1 || n > SITE_SCORE_CAP) return;
+  try {
+    await fetch(SITE_ADD_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        highscore_id: SITE_SCORE_ID,
+        name: "Player",
+        score: n,
+      }),
+      keepalive: true,
+    });
+  } catch {
+    /* Offline / blocked — personal best still saved locally */
   }
 }
