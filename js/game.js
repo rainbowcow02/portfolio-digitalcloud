@@ -15,13 +15,27 @@ import { ensureAudio, isSoundOn, playCatch, playMiss, playGameOver } from "./sou
 const BEST_KEY = "ctsBest";
 const LIVES = 3;
 
-/* Ramp keyed to score. At ~40 caught the curve holds. Six numbers = the whole feel. */
-const FALL_AT_0 = 140; /* px/s */
-const FALL_AT_40 = 420;
-const SPAWN_AT_0 = 1.1; /* seconds */
-const SPAWN_AT_40 = 0.35;
-const RAMP_SCORE = 40;
-const SPEED_JITTER = 0.15;
+/*
+ * Ramp keyed to score. Desktop tops out ~40; mobile keeps climbing to 120 with a
+ * harsher ceiling — the narrower field + finger scrub is otherwise much easier.
+ */
+const DESKTOP_TUNE = {
+  fallAt0: 140 /* px/s */,
+  fallAtMax: 420,
+  spawnAt0: 1.1 /* seconds */,
+  spawnAtMax: 0.35,
+  rampScore: 40,
+  speedJitter: 0.15,
+};
+const MOBILE_TUNE = {
+  fallAt0: 140,
+  fallAtMax: 540,
+  spawnAt0: 1.1,
+  spawnAtMax: 0.25,
+  rampScore: 120,
+  speedJitter: 0.22,
+};
+const MOBILE_QUERY = "(max-width: 767px)";
 
 const PLAYER_W = 56;
 const PLAYER_H = 68;
@@ -64,6 +78,10 @@ export function initGame() {
   reduceMotion.addEventListener("change", (e) => {
     whimsy = !e.matches;
   });
+
+  const mobileMq = window.matchMedia(MOBILE_QUERY);
+  /** Snapshot at round start so a rotate mid-game doesn't jump the curve. */
+  let tune = mobileMq.matches ? MOBILE_TUNE : DESKTOP_TUNE;
 
   const sprite = new Image();
   let spriteOk = false;
@@ -198,6 +216,7 @@ export function initGame() {
     spriteOk = true;
 
     ensureAudio();
+    tune = mobileMq.matches ? MOBILE_TUNE : DESKTOP_TUNE;
 
     state.mode = "playing";
     state.score = 0;
@@ -269,17 +288,17 @@ export function initGame() {
   /* ——— Sim ——— */
 
   function rampT() {
-    return Math.min(1, state.score / RAMP_SCORE);
+    return Math.min(1, state.score / tune.rampScore);
   }
 
   function fallSpeed() {
     const t = rampT();
-    return FALL_AT_0 + (FALL_AT_40 - FALL_AT_0) * t;
+    return tune.fallAt0 + (tune.fallAtMax - tune.fallAt0) * t;
   }
 
   function spawnInterval() {
     const t = rampT();
-    return SPAWN_AT_0 + (SPAWN_AT_40 - SPAWN_AT_0) * t;
+    return tune.spawnAt0 + (tune.spawnAtMax - tune.spawnAt0) * t;
   }
 
   function update(dt) {
@@ -378,7 +397,7 @@ export function initGame() {
     const r = STAR_SIZE / 2;
     const x = r + 8 + Math.random() * Math.max(1, w - (r + 8) * 2);
     const base = fallSpeed();
-    const jitter = 1 + (Math.random() * 2 - 1) * SPEED_JITTER;
+    const jitter = 1 + (Math.random() * 2 - 1) * tune.speedJitter;
     state.stars.push({
       x,
       y: -r,
