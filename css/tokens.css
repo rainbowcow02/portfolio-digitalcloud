@@ -179,6 +179,9 @@
   /* Headroom the hero name's per-word mask adds below the baseline so the
      descender in "Lindsay" isn't clipped. Also the letters' start offset. */
   --name-mask-pad: 0.18em;
+  /* Side room so glyph ink / AA on the first and last letters (notably the
+     final "y") isn't clipped by the mask. Layout-neutral via negative margin. */
+  --name-mask-pad-x: 0.08em;
 }
 
 /* the header is fixed, so anything sitting below it pads by --header-height;

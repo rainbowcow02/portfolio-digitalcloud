@@ -251,9 +251,12 @@ body.is-nav-open .hero__border {
      margin edge (CSS 2.1 §10.8.1), which would drop the whole h1 the instant JS
      runs. Pinning vertical-align makes the baseline deterministic instead. */
   vertical-align: top;
-  /* grow the mask past the descender in "Lindsay" without moving layout */
+  /* grow the mask past the descender and the side bearings of the end letters
+     (Inclusive Sans "y" was getting clipped) without moving layout */
   padding-bottom: var(--name-mask-pad);
   margin-bottom: calc(-1 * var(--name-mask-pad));
+  padding-inline: var(--name-mask-pad-x);
+  margin-inline: calc(-1 * var(--name-mask-pad-x));
 }
 
 .hero__name .char {
