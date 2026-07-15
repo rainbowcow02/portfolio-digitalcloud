@@ -132,7 +132,6 @@ export function initGame() {
 
   setState("idle");
   syncHud();
-  syncIdleTease();
   refreshSiteBest();
 
   /* ——— Loop shim: GSAP ticker preferred; plain rAF if CDN failed ——— */
@@ -529,13 +528,6 @@ export function initGame() {
     if (bestOut) bestOut.textContent = formatScore(state.best);
   }
 
-  /** Idle tease — a visible record makes the card feel worth a try. */
-  function syncIdleTease() {
-    if (!hint || getState() !== "idle") return;
-    hint.textContent =
-      state.best > 0 ? `Best to beat · ${formatScore(state.best)}` : "";
-  }
-
   async function refreshSiteBest() {
     const remote = await fetchSiteBest();
     if (remote > state.siteBest) state.siteBest = remote;
@@ -548,7 +540,6 @@ export function initGame() {
     if (next !== state.best) {
       state.best = next;
       syncHud();
-      syncIdleTease();
     }
   }
 
