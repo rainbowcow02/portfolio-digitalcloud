@@ -5,20 +5,19 @@
  * with score (not elapsed time). Canvas draws the field; DOM owns HUD, scenery,
  * and copy. Idle / playing / over visuals are driven by data-game-state.
  *
- * Best score is site-wide (shared across visitors) plus a personal localStorage
- * floor, so the idle card always has a number to beat. Loop runs on gsap.ticker
- * while a round is active (MOTION.md: one ticker, not a competing rAF). Falls
- * back to requestAnimationFrame if GSAP didn't load. Fail-safe: missing canvas
- * context or failed sprite load → leave the idle card as-is.
+ * Best is a shared site record (fetched/posted to a hobby high-score API) so every
+ * visitor sees the same number to beat. Loop runs on gsap.ticker while a round is
+ * active (MOTION.md: one ticker, not a competing rAF). Falls back to
+ * requestAnimationFrame if GSAP didn't load. Fail-safe: missing canvas context or
+ * failed sprite load → leave the idle card as-is.
  */
 
 import { ensureAudio, isSoundOn, playCatch, playMiss, playGameOver } from "./sound.js";
 
-const BEST_KEY = "ctsBest";
 const LIVES = 3;
 
-/* Shared site record (hobby high-score API). HOUSE_BEST is the floor so a cold
-   board / monthly wipe still shows a challenge. Personal best stays in localStorage. */
+/* Shared site record. HOUSE_BEST is the floor so a cold board / monthly wipe still
+   shows a challenge. */
 const HOUSE_BEST = 28;
 const SITE_SCORE_ID = "f19f2b7b-cfbd-4b6f-bc1b-5f351e2b19c8";
 const SITE_SCORES_URL = `https://highscore.sasagu.com/api/v1/scores/${SITE_SCORE_ID}`;
@@ -114,9 +113,7 @@ export function initGame() {
     score: 0,
     misses: 0,
     streak: 0,
-    personal: readBest(),
-    siteBest: HOUSE_BEST,
-    best: 0,
+    best: HOUSE_BEST,
     spawnIn: 0,
     stars: [],
     sparks: [],
@@ -124,7 +121,6 @@ export function initGame() {
     keys: new Set(),
     resumeMode: null,
   };
-  state.best = Math.max(state.personal, state.siteBest);
 
   let loopAttached = false;
   let last = 0;
@@ -263,26 +259,16 @@ export function initGame() {
     setState("over");
     hidePlayHint();
 
-    const priorBest = state.best;
-    const isBest = state.score > priorBest;
-    const beatsSite = state.score > state.siteBest;
-
-    if (state.score > state.personal) {
-      state.personal = state.score;
-      writeBest(state.personal);
-    }
-    if (beatsSite) {
-      state.siteBest = state.score;
+    const isBest = state.score > state.best;
+    if (isBest) {
+      state.best = state.score;
       submitSiteBest(state.score);
     }
-    state.best = Math.max(state.personal, state.siteBest);
 
     if (isSoundOn()) playGameOver();
 
     message.textContent = isBest
-      ? beatsSite
-        ? "New site record!"
-        : "New best!"
+      ? "New best!"
       : OVER_LINES[Math.floor(Math.random() * OVER_LINES.length)];
     if (hint) hint.textContent = OVER_HINT;
     syncHud();
@@ -530,15 +516,8 @@ export function initGame() {
 
   async function refreshSiteBest() {
     const remote = await fetchSiteBest();
-    if (remote > state.siteBest) state.siteBest = remote;
-    /* Promote a pre-existing personal best so other visitors see it too. */
-    if (state.personal > state.siteBest) {
-      state.siteBest = state.personal;
-      submitSiteBest(state.personal);
-    }
-    const next = Math.max(state.personal, state.siteBest, HOUSE_BEST);
-    if (next !== state.best) {
-      state.best = next;
+    if (remote > state.best) {
+      state.best = remote;
       syncHud();
     }
   }
@@ -633,30 +612,6 @@ export function initGame() {
   resize();
 }
 
-function readBest() {
-  try {
-    const next = Number(localStorage.getItem(BEST_KEY));
-    if (next) return next;
-    /* One-time migrate from the earlier key if present. */
-    const legacy = Number(localStorage.getItem("ll-catch-best"));
-    if (legacy) {
-      localStorage.setItem(BEST_KEY, String(legacy));
-      return legacy;
-    }
-    return 0;
-  } catch {
-    return 0;
-  }
-}
-
-function writeBest(value) {
-  try {
-    localStorage.setItem(BEST_KEY, String(value));
-  } catch {
-    /* Safari private mode throws — ignore */
-  }
-}
-
 async function fetchSiteBest() {
   try {
     const res = await fetch(SITE_SCORES_URL, { cache: "no-store" });
@@ -684,6 +639,6 @@ async function submitSiteBest(score) {
       keepalive: true,
     });
   } catch {
-    /* Offline / blocked — personal best still saved locally */
+    /* Offline / blocked — Best still updates in-session via state */
   }
 }
