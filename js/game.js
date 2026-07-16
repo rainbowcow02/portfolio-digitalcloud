@@ -53,7 +53,7 @@ const VX_LERP = 14; /* how fast vx catches the target */
 const POINTER_EASE = 16;
 const STAR_SIZE = 28;
 const CATCH_PAD_X = 10; /* catch band wider than the sprite */
-const FLOOR_PAD = 20; /* matches .game__ground height */
+const FALLBACK_FLOOR_PAD = 20;
 
 const IDLE_PROMPT = "Click or tap to play";
 const OVER_HINT = "Click or tap to play again.";
@@ -106,6 +106,7 @@ export function initGame() {
 
   let w = 0;
   let h = 0;
+  let floorPad = FALLBACK_FLOOR_PAD;
   let hintTimer = 0;
 
   const state = {
@@ -178,8 +179,12 @@ export function initGame() {
     const rect = canvas.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const cssFloorPad = Number.parseFloat(
+      getComputedStyle(canvas).getPropertyValue("--game-ground-height")
+    );
     w = rect.width;
     h = rect.height;
+    floorPad = Number.isFinite(cssFloorPad) ? cssFloorPad : FALLBACK_FLOOR_PAD;
     canvas.width = Math.round(w * dpr);
     canvas.height = Math.round(h * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -348,7 +353,7 @@ export function initGame() {
       state.spawnIn = spawnInterval();
     }
 
-    const top = h - FLOOR_PAD - PLAYER_H;
+    const top = h - floorPad - PLAYER_H;
     for (let i = state.stars.length - 1; i >= 0; i--) {
       const s = state.stars[i];
       s.y += s.vy * dt;
@@ -373,7 +378,7 @@ export function initGame() {
         continue;
       }
 
-      if (s.y - s.r > h - FLOOR_PAD) {
+      if (s.y - s.r > h - floorPad) {
         state.stars.splice(i, 1);
         state.misses += 1;
         state.streak = 0;
@@ -494,7 +499,7 @@ export function initGame() {
     const dw = PLAYER_W * (1 + sq);
     const dh = PLAYER_H * (1 - sq);
     const x = Math.round(p.x - (dw - PLAYER_W) / 2);
-    const y = Math.round(h - FLOOR_PAD - dh);
+    const y = Math.round(h - floorPad - dh);
     ctx.drawImage(sprite, x, y, Math.round(dw), Math.round(dh));
   }
 
@@ -582,12 +587,9 @@ export function initGame() {
     if (e.pointerType === "mouse" || e.buttons) state.player.target = pointerX(e);
   });
 
-  canvas.addEventListener("pointerleave", () => {
-    if (state.mode === "playing") state.player.target = null;
-  });
-
   function pointerX(e) {
-    return e.clientX - canvas.getBoundingClientRect().left;
+    const rect = canvas.getBoundingClientRect();
+    return Math.max(0, Math.min(rect.width, e.clientX - rect.left));
   }
 
   /* Pause aggressively — detach the loop. Resume when attention returns. */

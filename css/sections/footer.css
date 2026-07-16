@@ -12,7 +12,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: var(--space-16);
+  gap: clamp(var(--space-16), 6.4vw, var(--space-23));
   width: 100%;
   max-width: 1296px; /* Figma 1440 − 72px gutters */
   margin: 0 auto;

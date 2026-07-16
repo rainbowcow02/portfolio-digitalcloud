@@ -1,9 +1,10 @@
 /* ——— Game: catch the stars ——— */
 
-/* the game is the right-hand column of the footer's contact row: it caps at Figma's
-   725px and stretches back up to the height of the CTA stack beside it */
+/* the game is the right-hand column of the footer's contact row: a narrower field
+   keeps mouse travel comfortable and stretches back up to the CTA stack's height */
 .game {
-  flex: 0 1 725px;
+  --game-ground-height: var(--space-8);
+  flex: 0 1 600px;
   align-self: stretch;
   min-width: 0;
 }
@@ -86,7 +87,7 @@
   left: -5px;
   right: -5px;
   bottom: 0;
-  height: var(--space-5); /* 20 ≈ Figma’s 19px peach floor */
+  height: var(--game-ground-height);
   background-color: var(--peach);
 }
 
@@ -120,7 +121,7 @@
 
 /* only while playing: a drag has to steer mini-me, not scroll the page past her */
 .game__stage[data-game-state="playing"] .game__canvas {
-  cursor: none;
+  cursor: crosshair;
   touch-action: none;
 }
 
@@ -308,6 +309,7 @@
      inset column left mini-me barely 290px to run in. --space-2 of the gutter is kept so
      the card's peach border doesn't kiss the page frame. */
   .game {
+    --game-ground-height: var(--space-5);
     flex: 0 0 auto;
     width: calc(100% + (var(--page-gutter) - var(--space-2)) * 2);
     margin-inline: calc((var(--page-gutter) - var(--space-2)) * -1);
