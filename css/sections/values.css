@@ -18,18 +18,6 @@
   margin: 0 auto;
 }
 
-/* Decor — flower sits behind the content, cresting the section's top edge.
-   Already small at its 260px design size, so it holds a 220px floor instead of
-   tracking the viewport all the way down */
-.flower-decor--values {
-  top: calc(-1 * var(--space-10));
-  left: 3%;
-  width: clamp(220px, 18vw, 260px);
-  height: auto;
-  --drift: 50px;
-  mix-blend-mode: multiply;
-}
-
 /* ——— SectionHeader ——— */
 
 .values__header {
@@ -102,12 +90,6 @@
   .values__inner {
     flex-direction: column;
     gap: var(--space-10);
-  }
-
-  .flower-decor--values {
-    top: calc(-1 * var(--space-6));
-    left: 36%;
-    width: clamp(150px, 45vw, 180px);
   }
 
   .values__header {

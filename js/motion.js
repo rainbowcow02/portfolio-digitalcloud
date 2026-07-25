@@ -267,6 +267,11 @@ function initScrollReveals() {
  * matrix and write an inline transform, which outranks the stylesheet forever. The
  * hero flower's mobile override (translateY 50% -> 38%) would silently never apply
  * again, and its %-of-own-height offset would stop tracking its fluid width.
+ *
+ * Most flowers trigger on themselves: mapping progress across a tall section
+ * (especially `.work`) diluted a full --drift into a few pixels per viewport.
+ * The header flower is the exception — it still tracks its section so its
+ * resting offset (--base-y: 50%) matches the designed hero composition.
  */
 function initFlowerParallax() {
   const flowers = document.querySelectorAll(".flower-decor");
@@ -274,11 +279,12 @@ function initFlowerParallax() {
 
   flowers.forEach((flower) => {
     const section = flower.closest("section");
-    if (!section) return;
+    const useSection = flower.classList.contains("flower-decor--header");
+    const trigger = useSection && section ? section : flower;
 
     triggers.push(
       ScrollTrigger.create({
-        trigger: section,
+        trigger,
         start: "top bottom",
         end: "bottom top",
         onUpdate: (self) => {

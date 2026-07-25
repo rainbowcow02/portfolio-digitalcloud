@@ -25,7 +25,9 @@
   text-align: center;
 }
 
-/* Decor — flowers sit behind the content */
+/* Decor — flowers sit behind the content.
+   Spread: snapshots near the title (left), projects mid-section (left crest),
+   side lower down (right crest) — so the column isn't all one-sided. */
 /* --drift feeds the shared parallax transform in hero.css. Bigger, further-back
    flowers drift more, which is what reads as depth. */
 .flower-decor--snapshots {
@@ -33,16 +35,42 @@
   left: 10%;
   width: min(333px, 24vw);
   height: auto;
-  --drift: 60px;
+  --drift: 100px;
   mix-blend-mode: multiply;
 }
 
+/* Pulled up out of the Enterprise App block (was top: 60%, where the project's
+   image sat over it) into the gap between the earlier projects, so its left
+   crest actually reads. */
 .flower-decor--projects {
-  top: 60%;
+  top: 28%;
   left: -18%;
   width: min(655px, 46vw);
   height: auto;
-  --drift: 110px;
+  --drift: 160px;
+  mix-blend-mode: multiply;
+}
+
+/* Right-hand counterweight in the gap after Enterprise App Deployment /
+   before Apple Business Essentials — crests in from the gutter so it reads
+   between those two blocks instead of under their images. */
+.flower-decor--side {
+  top: 76%;
+  right: -10%;
+  width: min(400px, 30vw);
+  height: auto;
+  --drift: 130px;
+  mix-blend-mode: multiply;
+}
+
+/* Sits in the bottom padding just under the Apple image, right side. */
+.flower-decor--values {
+  top: auto;
+  bottom: calc(var(--space-8) + 72px);
+  right: 3%;
+  width: clamp(220px, 18vw, 260px);
+  height: auto;
+  --drift: 90px;
   mix-blend-mode: multiply;
 }
 
@@ -153,9 +181,22 @@
     width: clamp(140px, 41vw, 160px);
   }
 
-  /* top / left inherited from desktop — only the size scales down */
+  /* Size + a slightly higher rest so it still peeks between stacked cards */
   .flower-decor--projects {
+    top: 24%;
     width: clamp(240px, 62vw, 300px);
+  }
+
+  .flower-decor--side {
+    top: 74%;
+    right: -14%;
+    width: clamp(170px, 48vw, 210px);
+  }
+
+  .flower-decor--values {
+    bottom: var(--space-6);
+    right: 8%;
+    width: clamp(150px, 45vw, 180px);
   }
 
   .project__text {
