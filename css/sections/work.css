@@ -100,11 +100,6 @@
   height: auto;
   display: block;
   border-radius: var(--radius-sm);
-  transition: transform var(--duration-med) var(--ease-out);
-}
-
-.project__img:hover {
-  transform: translateY(-4px);
 }
 
 /* Single hero image — allowed to run wider than the paired-image cap */
@@ -185,15 +180,5 @@
   .project__img {
     width: 100%;
     max-width: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .project__img {
-    transition: none;
-  }
-
-  .project__img:hover {
-    transform: none;
   }
 }
