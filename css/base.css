@@ -120,3 +120,18 @@ p {
   white-space: nowrap;
   border: 0;
 }
+
+/* Boxed section-header label — snow fill, 3px black border, and a hard offset
+   shadow to the bottom-left. Hugs its label; pair with .type-sm for the
+   Inclusive Sans Bold 19px per Figma. Shared by the Work title and the Design
+   values eyebrow. */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px var(--space-4);
+  background-color: var(--color-bg-alt);
+  border: 3px solid var(--black);
+  box-shadow: -5px 5px 0 var(--black);
+  white-space: nowrap;
+}

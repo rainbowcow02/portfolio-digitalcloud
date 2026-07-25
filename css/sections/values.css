@@ -40,6 +40,14 @@
   flex: 0 0 auto;
 }
 
+/* Layout only — the pill's visual box lives in the shared .eyebrow class.
+   Hugs its label rather than the 320px column width. */
+.values__eyebrow {
+  align-self: flex-start;
+  /* +16px header gap ≈ Figma's 40px between the pill and the heading */
+  margin: 0 0 var(--space-6);
+}
+
 .values__title {
   margin: 0;
 }
