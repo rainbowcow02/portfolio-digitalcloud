@@ -103,33 +103,43 @@
 
 .site-footer__socials {
   display: flex;
-  align-items: flex-start;
-  gap: var(--space-2);
+  align-items: center;
+  gap: var(--space-6); /* Figma 24px between icons */
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-/* Figma's 48px tile is kept as the tap target; the glyph sits centred inside it */
+/* Figma's 48px tile doubles as the tap target; the glyph fills it edge to edge */
 .social-icon {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 48px;
   height: 48px;
-  border-radius: var(--radius-md);
   color: var(--color-text-primary);
   transition: transform var(--duration-fast) var(--ease-out);
 }
 
-.social-icon:hover {
+.social-icon:hover,
+.social-icon:focus-visible {
   transform: translateY(-2px);
 }
 
+/* Per the Figma the glyphs are the text colour at 30% — a uniform light grey
+   where all three marks read as one consistent weight; hover darkens to full */
 .social-icon__glyph {
-  width: 28px;
-  height: 28px;
+  display: block;
+  width: 48px;
+  height: 48px;
   fill: currentColor;
+  opacity: 0.3;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.social-icon:hover .social-icon__glyph,
+.social-icon:focus-visible .social-icon__glyph {
+  opacity: 1;
 }
 
 /* ——— Legal row ——— */
