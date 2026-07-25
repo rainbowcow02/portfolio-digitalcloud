@@ -7,7 +7,11 @@
 /* ——— Contact row ——— */
 
 /* the CTA stack and the game stage sit side by side, both hanging off the row's
-   bottom edge — the game then stretches back up to the CTA's height */
+   bottom edge — the game then stretches back up to the CTA's height. as the row
+   tightens the CTA gives ground first (the blurb reflows, the display type scales
+   with the viewport) and the game shrinks to keep them side by side, so the row
+   `gap` always keeps clear air between the two rather than the copy overlapping the
+   game */
 .site-footer__contact {
   display: flex;
   align-items: flex-end;
@@ -20,13 +24,15 @@
 }
 
 /* thanks + contact text stacked; hugs its widest child rather than a fixed 360 so
-   the fluid display type isn't clipped at large viewports */
+   the fluid display type isn't clipped at large viewports. no min-width:0 override —
+   the column keeps its content's min-content as a floor so it shrinks (blurb reflows,
+   hero scales with the viewport) only down to the width of the display type, never
+   letting the words crush past their box into the game */
 .site-footer__cta {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-11);
-  min-width: 0;
 }
 
 /* ——— Thank you ——— */
@@ -37,7 +43,6 @@
   align-items: flex-start;
   gap: 0;
   width: fit-content;
-  min-width: 0;
 }
 
 .site-footer__kicker {
@@ -87,9 +92,11 @@
   text-align: center;
 }
 
+/* caps at the Figma 360 but is free to reflow narrower as the CTA column gives
+   ground, so the blurb wraps to save space instead of spilling into the game */
 .site-footer__desc {
-  width: 360px;
-  max-width: 100%;
+  width: 100%;
+  max-width: 360px;
 }
 
 /* ——— SocialIcons ——— */
