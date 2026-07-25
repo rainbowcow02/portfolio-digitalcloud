@@ -71,6 +71,11 @@
   white-space: nowrap;
 }
 
+/* Year reads as secondary against the company name */
+.project__year {
+  color: var(--color-text-secondary);
+}
+
 .project__name {
   margin: 0;
 }
@@ -91,14 +96,49 @@
   flex: 1 0 0;
   min-width: 0;
   max-width: 600px;
-  aspect-ratio: 383 / 287;
+  width: 100%;
+  height: auto;
+  display: block;
   border-radius: var(--radius-sm);
-  background-color: var(--surface-muted);
   transition: transform var(--duration-med) var(--ease-out);
 }
 
 .project__img:hover {
   transform: translateY(-4px);
+}
+
+/* Single hero image — allowed to run wider than the paired-image cap */
+.project__imgs--wide {
+  max-width: 1000px;
+  margin-inline: auto;
+}
+
+.project__imgs--wide .project__img {
+  max-width: 100%;
+}
+
+/* Colored frame around image(s) — the image floats inside a tinted card */
+.project__imgs--frame {
+  max-width: 1000px;
+  margin-inline: auto;
+  padding: 50px;
+  border-radius: var(--radius-sm);
+  box-sizing: border-box;
+}
+
+.project__imgs--frame .project__img {
+  flex: 0 1 auto;
+  max-width: 100%;
+}
+
+.project__imgs--periwinkle {
+  background-color: var(--periwinkle);
+}
+
+.project__imgs--mauve {
+  background-color: var(--mauve);
+  flex-direction: column;
+  gap: var(--space-15); /* 60 — stacked features */
 }
 
 /* ——— Mobile ≤767px ——— */
@@ -131,6 +171,15 @@
   .project__imgs {
     flex-direction: column;
     gap: var(--space-3);
+  }
+
+  /* Tinted frames get thinner padding so the image keeps room on small screens */
+  .project__imgs--frame {
+    padding: var(--space-5);
+  }
+
+  .project__imgs--mauve {
+    gap: var(--space-6);
   }
 
   .project__img {
