@@ -264,6 +264,11 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-8);
+  /* The overlay and header share the same --page-inset, but the X glyph is centred
+     inside the --space-10 toggle button, so it sits half that gutter to the right of
+     the raw inset. Push the links over by the same amount to optically align their
+     left edge with the X. */
+  padding-left: calc((var(--space-10) - 18px) / 2);
 }
 
 .nav-overlay__link {
@@ -272,32 +277,10 @@
   font-weight: 700;
   letter-spacing: var(--tracking-lrg);
   color: var(--color-text-primary);
+  display: inline-block;
   width: fit-content;
   opacity: 0;
   transform: translateX(calc(var(--space-4) * -1));
-}
-
-/* Same grammar as the other links — sweep from the left, swell in height — but the
-   drawer links are display-size, so a full em-height highlighter would read as a slab.
-   The bar stays a bar and just thickens. */
-.nav-overlay__link::after {
-  content: "";
-  display: block;
-  width: 100%;
-  height: var(--link-underline-drawer-rest);
-  margin-top: var(--space-2);
-  background-color: var(--color-link-underline);
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition:
-    transform var(--duration-med) var(--ease-out),
-    height var(--duration-med) var(--ease-out);
-}
-
-.nav-overlay__link:hover::after,
-.nav-overlay__link:focus-visible::after {
-  transform: scaleX(1);
-  height: var(--link-underline-drawer-hover);
 }
 
 body.is-nav-open {
