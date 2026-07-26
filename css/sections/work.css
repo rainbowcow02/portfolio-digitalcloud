@@ -6,6 +6,11 @@
   position: relative;
   isolation: isolate;
   padding: var(--space-33) var(--page-inset);
+  /* The decorative flowers rest partly out of frame (negative left/right offsets), so
+     clip them at the section that owns them. Same reasoning as .hero: iOS Safari pans the
+     visual viewport sideways when the document is wider than the screen, so the root's
+     overflow-x: clip alone isn't enough — this opens a phantom horizontal scroll on mobile. */
+  overflow-x: clip;
 }
 
 .work__inner {
