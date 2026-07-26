@@ -6,6 +6,8 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* Suppress the default grey box mobile browsers flash over tapped links/buttons */
+  -webkit-tap-highlight-color: transparent;
   scroll-behavior: smooth;
   /* clip, not hidden: keeps the sticky header working */
   overflow-x: clip;
