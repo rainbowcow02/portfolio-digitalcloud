@@ -108,13 +108,13 @@
 
     --text-primary: #e4e4e4eb;
     --text-secondary: #e4e4e48d;
-    --text-tertiary: #e4e4e4c0;
+    --text-tertiary: #e4e4e4e0;
     --text-quaternary: #e4e4e442;
     --text-on-accent: #191c22;
 
     --stroke-primary: #e4e4e433;
     --stroke-secondary: #e4e4e41f;
-    --stroke-tertiary: #e4e4e42a;
+    --stroke-tertiary: #e4e4e433;
     --stroke-focused: #e4e4e4;
     --fill-primary: #e4e4e430;
     --fill-secondary: #e4e4e41e;
@@ -139,13 +139,13 @@
 
   --text-primary: #e4e4e4eb;
   --text-secondary: #e4e4e48d;
-  --text-tertiary: #e4e4e4c0;
+  --text-tertiary: #e4e4e4e0;
   --text-quaternary: #e4e4e442;
   --text-on-accent: #191c22;
 
   --stroke-primary: #e4e4e433;
   --stroke-secondary: #e4e4e41f;
-  --stroke-tertiary: #e4e4e42a;
+  --stroke-tertiary: #e4e4e433;
   --stroke-focused: #e4e4e4;
   --fill-primary: #e4e4e430;
   --fill-secondary: #e4e4e41e;
@@ -711,6 +711,8 @@ code {
   row-gap: var(--space-6);
   gap: var(--space-6) 90px;
   min-width: 0;
+  /* + charts-grid row-gap (--space-6) = --space-7, matching .page */
+  margin-bottom: calc(var(--space-7) - var(--space-6));
 }
 
 .footnote {
@@ -843,6 +845,7 @@ code {
     gap: var(--space-6);
     column-gap: var(--space-6);
     row-gap: var(--space-6);
+    margin-bottom: 0;
     padding-bottom: var(--space-6);
   }
 
