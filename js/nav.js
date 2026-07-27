@@ -84,7 +84,7 @@ export function initNav() {
       const sound = document.querySelector(".site-header [data-sound-toggle]");
       sound?.setAttribute("aria-hidden", "true");
       sound?.setAttribute("tabindex", "-1");
-      const firstLink = overlay.querySelector(".nav-overlay__link");
+      const firstLink = overlay.querySelector("[data-nav-overlay-link]");
       firstLink?.focus({ preventScroll: true });
     } else {
       // Fade content out immediately while drawer collapses — feels snappier
