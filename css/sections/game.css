@@ -95,7 +95,7 @@
    resolve against on mobile — the stage is sized by its min-height there — and the
    canvas collapses to its intrinsic 300×150, losing most of the field. Absolutely
    positioned, the percentages resolve against the stage's *used* height instead, which
-   is always definite. Cap at 640px and centre so a wide desktop doesn't become an
+   is always definite.    Cap at 520px and centre so a wide desktop doesn't become an
    easier (wider) game than a phone. */
 .game__canvas {
   position: absolute;
@@ -105,7 +105,7 @@
   z-index: 1;
   transform: translateX(-50%);
   display: block;
-  width: min(100%, 640px);
+  width: min(100%, 520px);
   height: 100%;
   /* Stage overflow:hidden clips the page focus ring to left/right bars — kill it here.
      Keyboard users still land in the game; the start control carries the visible ring. */
@@ -137,6 +137,11 @@
   pointer-events: none;
 }
 
+/* Pink control: force pure white glyph (not snow / off-white). */
+.game__sound .sound-toggle__img {
+  filter: brightness(0) invert(1);
+}
+
 .game__stage[data-game-state="playing"] .game__sound,
 .game__stage[data-game-state="over"] .game__sound {
   opacity: 1;
@@ -155,6 +160,14 @@
   align-items: flex-start;
   gap: var(--space-8); /* Figma 30 → nearest token */
   pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.game__stage[data-game-state="playing"] .game__hud,
+.game__stage[data-game-state="over"] .game__hud {
+  opacity: 1;
+  visibility: visible;
 }
 
 .game__stat {
@@ -178,29 +191,86 @@
 
 /* ——— In-play cue ——— */
 
-.game__play-hint {
+.game__play-hint,
+.game__sound-prompt {
   position: absolute;
   top: 42%;
   left: 50%;
   z-index: 2;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  text-align: center;
+  max-width: calc(100% - var(--space-12));
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.game__play-hint:not([hidden]),
+.game__sound-prompt:not([hidden]) {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.game__play-hint[hidden],
+.game__sound-prompt[hidden] {
+  display: none;
+}
+
+.game__cue-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.game__play-hint .game__cue-body {
+  gap: var(--space-4);
+}
+
+.game__play-hint-copy {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-2);
-  margin: 0;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  max-width: calc(100% - var(--space-12));
-  pointer-events: none;
 }
 
-.game__play-hint[hidden] {
-  display: none;
+.game__sound-prompt .game__cue-body {
+  gap: var(--space-4);
 }
 
 .game__play-hint-title,
 .game__play-hint-sub {
   margin: 0;
+}
+
+/* ——— First-session cues (instructions + sound) ——— */
+
+.game__sound-prompt-title {
+  margin: 0;
+}
+
+.game__sound-prompt-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.game__got-it,
+.game__sound-choice {
+  padding: 10px var(--space-4);
+  background-color: var(--color-bg-alt);
+  border: 3px solid var(--peach);
+  box-shadow: -5px 5px 0 var(--periwinkle);
+  cursor: pointer;
+}
+
+.game__got-it[hidden] {
+  display: none;
+}
+
+.game__got-it:focus-visible,
+.game__sound-choice:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
 }
 
 /* ——— Idle / game-over overlay ——— */
@@ -260,6 +330,35 @@
 
 .game__hint:empty {
   display: none;
+}
+
+/* Figma “How I built this”: body copy, right under the stage, 12px gap */
+.game__sim-link {
+  margin: var(--space-3) 0 0;
+  text-align: right;
+  line-height: normal;
+}
+
+.game__sim-link-anchor {
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.game__sim-link-anchor strong {
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.game__sim-link-anchor:hover strong,
+.game__sim-link-anchor:focus-visible strong {
+  text-decoration: underline;
+  text-decoration-color: var(--color-link-underline);
+  text-underline-offset: 3px;
+}
+
+.game__sim-link-anchor:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
 }
 
 .game__idle-figure {
@@ -356,6 +455,10 @@
   }
 
   .game__play-hint {
+    max-width: calc(100% - var(--space-8));
+  }
+
+  .game__sound-prompt {
     max-width: calc(100% - var(--space-8));
   }
 }

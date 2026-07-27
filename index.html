@@ -754,10 +754,44 @@
             </div>
 
             <div class="game__play-hint" data-game-play-hint hidden>
-              <p class="game__play-hint-title type-sm">
-                Scroll or tap — catch the stars
-              </p>
-              <p class="game__play-hint-sub type-body">You have 3 chances.</p>
+              <div class="game__cue-body">
+                <div class="game__play-hint-copy">
+                  <p class="game__play-hint-title type-sm">
+                    Scroll or tap — catch the stars
+                  </p>
+                  <p class="game__play-hint-sub type-body">You have 3 chances.</p>
+                </div>
+                <button
+                  class="game__got-it type-link"
+                  type="button"
+                  data-game-got-it
+                  hidden
+                >
+                  Got it
+                </button>
+              </div>
+            </div>
+
+            <div class="game__sound-prompt" data-game-sound-prompt hidden>
+              <div class="game__cue-body">
+                <p class="game__sound-prompt-title type-sm">Turn on sound?</p>
+                <div class="game__sound-prompt-actions">
+                  <button
+                    class="game__sound-choice type-link"
+                    type="button"
+                    data-game-sound-yes
+                  >
+                    Yes
+                  </button>
+                  <button
+                    class="game__sound-choice type-link"
+                    type="button"
+                    data-game-sound-no
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div class="game__overlay" data-game-overlay>
@@ -792,6 +826,16 @@
               data-game-status
             ></p>
           </div>
+
+          <p class="game__sim-link type-body">
+            <a
+              class="game__sim-link-anchor"
+              href="/tools/catch-the-stars-simulator/"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Curious <strong>how I built this</strong>?</a
+            >
+          </p>
         </section>
       </section>
 

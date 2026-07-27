@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>window.STAR_FALL_SIM_MODE = "dev";</script>
+    <script>
+      (function () {
+        var mode = window.STAR_FALL_SIM_MODE;
+        var themeKey =
+          mode === "demo"
+            ? "catch-the-stars-simulator-theme"
+            : "star-fall-sim-forcooking-theme";
+        try {
+          var stored = localStorage.getItem(themeKey);
+          var theme =
+            stored === "light" || stored === "dark"
+              ? stored
+              : window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          /* ignore */
+        }
+      })();
+    </script>
+    <title>Star fall sim (for cooking)</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="stylesheet" href="../star-fall-simulator/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <script type="module" src="../star-fall-simulator/bootstrap.js"></script>
+  </body>
+</html>

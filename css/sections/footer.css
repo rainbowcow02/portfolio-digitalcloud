@@ -20,7 +20,8 @@
   width: 100%;
   max-width: 1296px; /* Figma 1440 − 72px gutters */
   margin: 0 auto;
-  padding: var(--space-20) var(--page-inset) var(--space-4);
+  /* Figma Footer pb 50 → nearest token */
+  padding: var(--space-20) var(--page-inset) var(--space-12);
 }
 
 /* thanks + contact text stacked; hugs its widest child rather than a fixed 360 so

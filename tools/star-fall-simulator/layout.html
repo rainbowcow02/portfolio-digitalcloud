@@ -1,0 +1,348 @@
+    <main class="page">
+      <header class="page-header">
+        <div class="page-header-text">
+          <h1 id="pageHeading">Star fall simulator</h1>
+          <p id="pageIntro">
+            Adjust the tuning and watch the ramp, the charts, and the falling stars respond.
+          </p>
+        </div>
+        <button
+          type="button"
+          class="theme-toggle"
+          id="themeToggle"
+          aria-label="Switch to light mode"
+          title="Toggle light/dark mode"
+        >
+          <svg class="icon-sun" viewBox="0 0 16 16" aria-hidden="true">
+            <circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.5" />
+            <path
+              d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1.1 1.1M11.5 11.5l1.1 1.1M3.4 12.6l1.1-1.1M11.5 4.5l1.1-1.1"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 16 16" aria-hidden="true">
+            <path
+              d="M12.5 9.2A5.5 5.5 0 0 1 6.8 3.5 5.5 5.5 0 1 0 12.5 9.2z"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+      </header>
+
+      <section class="global-controls" aria-label="Global controls">
+        <label class="field" style="--field-w: 200px">
+          <span class="field-label">Device profile</span>
+          <span class="field-sub">Settings stored per device</span>
+          <div class="dropdown">
+            <div class="dropdown-face" aria-hidden="true">
+              <span class="dropdown-value">desktop</span>
+              <svg class="dropdown-caret" width="12" height="12" viewBox="0 0 12 12">
+                <path
+                  d="M2.5 4.5 6 8l3.5-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+            <select id="device" class="select" aria-label="Device profile">
+              <option value="mobile">mobile</option>
+              <option value="desktop" selected>desktop</option>
+            </select>
+          </div>
+        </label>
+
+        <label class="field" style="--field-w: 200px">
+          <span class="field-label">X-axis</span>
+          <span class="field-sub">Max stars in chart view</span>
+          <input
+            id="xMax"
+            class="input"
+            type="text"
+            inputmode="numeric"
+            data-number
+            data-min="20"
+            data-max="500"
+            data-step="10"
+            data-decimals="0"
+            data-key="xMax"
+          />
+        </label>
+
+        <label class="field" style="--field-w: 200px">
+          <span class="field-label">rampScore</span>
+          <span class="field-sub" id="rampScoreHint">Stars when curves reach full</span>
+          <div class="number-field">
+            <input
+              id="rampScore"
+              class="input"
+              type="text"
+              inputmode="numeric"
+              data-number
+              data-min="10"
+              data-max="300"
+              data-step="5"
+              data-decimals="0"
+              data-profile="rampScore"
+            />
+            <button type="button" class="btn btn-secondary" data-stepper="-1" data-for="rampScore" aria-label="Decrease rampScore">−</button>
+            <button type="button" class="btn btn-secondary" data-stepper="1" data-for="rampScore" aria-label="Increase rampScore">+</button>
+          </div>
+        </label>
+      </section>
+
+      <hr class="divider" />
+
+      <section class="main-layout">
+        <aside class="sim-panel">
+          <div class="sim-header">
+            <div class="sim-title-block">
+              <h2 class="section-title">Star fall sim</h2>
+              <span class="field-sub" id="fieldWidthLabel">450px field (proposed play width)</span>
+              <div class="sim-actions">
+                <button type="button" id="btnPlay" class="btn btn-secondary">pause</button>
+                <button type="button" id="btnReset" class="btn btn-primary">reset</button>
+              </div>
+            </div>
+            <label class="field field-width" id="fieldWidthWrap" hidden>
+              <span class="field-sub">Width</span>
+              <div class="number-field">
+                <input
+                  id="fieldWidth"
+                  class="input"
+                  type="text"
+                  inputmode="numeric"
+                  data-number
+                  data-min="280"
+                  data-max="640"
+                  data-step="10"
+                  data-decimals="0"
+                  data-profile="fieldWidth"
+                />
+                <button type="button" class="btn btn-secondary" data-stepper="-1" data-for="fieldWidth" aria-label="Decrease width">−</button>
+                <button type="button" class="btn btn-secondary" data-stepper="1" data-for="fieldWidth" aria-label="Increase width">+</button>
+              </div>
+            </label>
+          </div>
+
+          <div id="playField" class="play-field" aria-label="Star fall preview">
+            <div class="catch-line"></div>
+            <div id="starsLayer" class="stars-layer"></div>
+            <img
+              id="player"
+              class="player"
+              src="../../assets/mini-me.png"
+              alt=""
+              width="56"
+              height="68"
+              draggable="false"
+            />
+          </div>
+
+          <div class="stats" aria-live="polite">
+            <div class="stat"><span class="stat-label">Sim score</span><span class="stat-value" id="statScore">0</span></div>
+            <div class="stat"><span class="stat-label">Fall speed</span><span class="stat-value" id="statSpeed">0 px/s</span></div>
+            <div class="stat"><span class="stat-label">Spawn every</span><span class="stat-value" id="statSpawn">0 s</span></div>
+            <div class="stat"><span class="stat-label">Stars/s</span><span class="stat-value" id="statPerSec">0</span></div>
+            <div class="stat"><span class="stat-label">Randomness</span><span class="stat-value" id="statJitter">±0%</span></div>
+          </div>
+        </aside>
+
+        <div class="charts-grid">
+          <section class="chart-col">
+            <div class="field">
+              <span class="field-label">Star fall speed</span>
+              <span class="field-sub" id="fallChartSub">Higher = stars drop faster</span>
+              <div class="chart-wrap">
+                <canvas id="fallChart" height="220"></canvas>
+                <div class="live-overlay" data-chart="fall" aria-hidden="true">
+                  <div class="live-guide"></div>
+                  <div class="live-dot"></div>
+                </div>
+              </div>
+              <div class="chart-legend" id="fallLegend"></div>
+            </div>
+            <div class="control-stack">
+              <label class="field">
+                <span class="field-label">Speed curve</span>
+                <span class="field-sub" id="speedCurveHint">Fall speed curve</span>
+                <div class="dropdown">
+                  <div class="dropdown-face" aria-hidden="true">
+                    <span class="dropdown-value"></span>
+                    <svg class="dropdown-caret" width="12" height="12" viewBox="0 0 12 12">
+                      <path
+                        d="M2.5 4.5 6 8l3.5-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <select id="speedCurve" class="select" data-profile="speedCurve" aria-label="Speed curve"></select>
+                </div>
+              </label>
+              <label class="field">
+                <span class="field-label">fallAtMax</span>
+                <span class="field-sub">Star fall speed when game is fully ramped.</span>
+                <div class="number-field">
+                  <input id="fallAtMax" class="input" type="text" inputmode="numeric" data-number data-min="140" data-max="800" data-step="10" data-decimals="0" data-profile="fallAtMax" />
+                  <button type="button" class="btn btn-secondary" data-stepper="-1" data-for="fallAtMax">−</button>
+                  <button type="button" class="btn btn-secondary" data-stepper="1" data-for="fallAtMax">+</button>
+                </div>
+              </label>
+              <label class="field">
+                <span class="field-label">Waves</span>
+                <span class="field-sub">Fractional cycles (steps ±0.25)</span>
+                <div class="number-field">
+                  <input id="speedWaves" class="input" type="text" inputmode="decimal" data-number data-min="0" data-max="12" data-step="0.25" data-decimals="2" data-profile="speedWaves" />
+                  <button type="button" class="btn btn-secondary" data-stepper="-1" data-for="speedWaves">−</button>
+                  <button type="button" class="btn btn-secondary" data-stepper="1" data-for="speedWaves">+</button>
+                </div>
+              </label>
+              <label class="field">
+                <span class="field-label">Waves depth</span>
+                <span class="field-sub" id="speedWaveDepthHint">Dips and surges (steps ±0.01)</span>
+                <div class="number-field">
+                  <input id="speedWaveDepth" class="input" type="text" inputmode="decimal" data-number data-min="0" data-max="0.5" data-step="0.01" data-decimals="2" data-profile="speedWaveDepth" />
+                  <button type="button" class="btn btn-secondary" data-stepper="-1" data-for="speedWaveDepth">−</button>
+                  <button type="button" class="btn btn-secondary" data-stepper="1" data-for="speedWaveDepth">+</button>
+                </div>
+              </label>
+            </div>
+          </section>
+
+          <section class="chart-col">
+            <div class="field">
+              <span class="field-label">Spawn interval</span>
+              <span class="field-sub" id="spawnChartSub">Lower = denser</span>
+              <div class="chart-wrap">
+                <canvas id="spawnChart" height="220"></canvas>
+                <div class="live-overlay" data-chart="spawn" aria-hidden="true">
+                  <div class="live-guide"></div>
+                  <div class="live-dot"></div>
+                </div>
+              </div>
+              <div class="chart-legend" id="spawnLegend"></div>
+            </div>
+            <div class="control-stack">
+              <label class="field">
+                <span class="field-label">Spawn curve</span>
+                <span class="field-sub">How density tightens over time</span>
+                <div class="dropdown">
+                  <div class="dropdown-face" aria-hidden="true">
+                    <span class="dropdown-value"></span>
+                    <svg class="dropdown-caret" width="12" height="12" viewBox="0 0 12 12">
+                      <path
+                        d="M2.5 4.5 6 8l3.5-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <select id="spawnCurve" class="select" data-profile="spawnCurve" aria-label="Spawn curve"></select>
+                </div>
+              </label>
+              <label class="field">
+                <span class="field-label">spawnAtMax</span>
+                <span class="field-sub">Star density at full difficulty. (Lower = denser)</span>
+                <div class="number-field">
+                  <input id="spawnAtMax" class="input" type="text" inputmode="decimal" data-number data-min="0.15" data-max="1.1" data-step="0.01" data-decimals="2" data-profile="spawnAtMax" />
+                  <button type="button" class="btn btn-secondary" data-stepper="-1" data-for="spawnAtMax">−</button>
+                  <button type="button" class="btn btn-secondary" data-stepper="1" data-for="spawnAtMax">+</button>
+                </div>
+              </label>
+              <label class="field">
+                <span class="field-label">Waves</span>
+                <span class="field-sub">Fractional cycles (steps ±0.25)</span>
+                <div class="number-field">
+                  <input id="spawnWaves" class="input" type="text" inputmode="decimal" data-number data-min="0" data-max="12" data-step="0.25" data-decimals="2" data-profile="spawnWaves" />
+                  <button type="button" class="btn btn-secondary" data-stepper="-1" data-for="spawnWaves">−</button>
+                  <button type="button" class="btn btn-secondary" data-stepper="1" data-for="spawnWaves">+</button>
+                </div>
+              </label>
+              <label class="field">
+                <span class="field-label">Waves depth</span>
+                <span class="field-sub" id="spawnWaveDepthHint">Dips and surges (steps ±0.01)</span>
+                <div class="number-field">
+                  <input id="spawnWaveDepth" class="input" type="text" inputmode="decimal" data-number data-min="0" data-max="0.5" data-step="0.01" data-decimals="2" data-profile="spawnWaveDepth" />
+                  <button type="button" class="btn btn-secondary" data-stepper="-1" data-for="spawnWaveDepth">−</button>
+                  <button type="button" class="btn btn-secondary" data-stepper="1" data-for="spawnWaveDepth">+</button>
+                </div>
+              </label>
+            </div>
+          </section>
+
+          <section class="chart-col">
+            <div class="field">
+              <span class="field-label">Per-star randomness</span>
+              <span class="field-sub">Each star's speed = mean × (1 ± jitter); jitter ramps min→max</span>
+              <div class="chart-wrap">
+                <canvas id="randChart" height="220"></canvas>
+                <div class="live-overlay" data-chart="rand" aria-hidden="true">
+                  <div class="live-guide"></div>
+                  <div class="live-dot"></div>
+                </div>
+              </div>
+              <div class="chart-legend" id="randLegend"></div>
+            </div>
+            <div class="control-stack">
+              <label class="field">
+                <span class="field-label">Jitter min</span>
+                <span class="field-sub">Randomness at 0 stars (ramps linearly to max)</span>
+                <div class="number-field">
+                  <input id="jitterMin" class="input" type="text" inputmode="decimal" data-number data-min="0" data-max="0.9" data-step="0.01" data-decimals="2" data-profile="jitterMin" />
+                  <button type="button" class="btn btn-secondary" data-stepper="-1" data-for="jitterMin">−</button>
+                  <button type="button" class="btn btn-secondary" data-stepper="1" data-for="jitterMin">+</button>
+                </div>
+              </label>
+              <label class="field">
+                <span class="field-label">Jitter max</span>
+                <span class="field-sub">Randomness at full ramp</span>
+                <div class="number-field">
+                  <input id="jitterMax" class="input" type="text" inputmode="decimal" data-number data-min="0" data-max="0.9" data-step="0.01" data-decimals="2" data-profile="jitterMax" />
+                  <button type="button" class="btn btn-secondary" data-stepper="-1" data-for="jitterMax">−</button>
+                  <button type="button" class="btn btn-secondary" data-stepper="1" data-for="jitterMax">+</button>
+                </div>
+              </label>
+              <label class="field">
+                <span class="field-label">Waves</span>
+                <span class="field-sub">Fractional cycles (steps ±0.25)</span>
+                <div class="number-field">
+                  <input id="jitterWaves" class="input" type="text" inputmode="decimal" data-number data-min="0" data-max="12" data-step="0.25" data-decimals="2" data-profile="jitterWaves" />
+                  <button type="button" class="btn btn-secondary" data-stepper="-1" data-for="jitterWaves">−</button>
+                  <button type="button" class="btn btn-secondary" data-stepper="1" data-for="jitterWaves">+</button>
+                </div>
+              </label>
+              <label class="field">
+                <span class="field-label">Waves depth</span>
+                <span class="field-sub" id="jitterWaveDepthHint">Dips and surges (steps ±0.01)</span>
+                <div class="number-field">
+                  <input id="jitterWaveDepth" class="input" type="text" inputmode="decimal" data-number data-min="0" data-max="0.5" data-step="0.01" data-decimals="2" data-profile="jitterWaveDepth" />
+                  <button type="button" class="btn btn-secondary" data-stepper="-1" data-for="jitterWaveDepth">−</button>
+                  <button type="button" class="btn btn-secondary" data-stepper="1" data-for="jitterWaveDepth">+</button>
+                </div>
+              </label>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <p class="footnote" id="footnote"></p>
+
+      <div class="toolbar" id="devToolbar">
+        <button type="button" id="btnResetDefaults" class="btn btn-secondary">Reset device to defaults</button>
+      </div>
+    </main>

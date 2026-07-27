@@ -72,6 +72,15 @@ function syncButtons(on) {
   });
 }
 
+/** Set sound on/off programmatically (e.g. first-session prompt). Runs inside a gesture. */
+export function setSoundOn(on) {
+  if (on) ensureAudio();
+  syncButtons(on);
+  document.dispatchEvent(
+    new CustomEvent(SOUND_CHANGE, { bubbles: true, detail: { on: soundOn } })
+  );
+}
+
 export function initSoundToggle() {
   const buttons = document.querySelectorAll("[data-sound-toggle]");
   if (!buttons.length) return;

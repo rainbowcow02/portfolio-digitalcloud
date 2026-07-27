@@ -3,7 +3,8 @@
  *
  * Stars fall; mini-me catches them. Three misses ends the round. Difficulty ramps
  * with score (not elapsed time). Canvas draws the field; DOM owns HUD, scenery,
- * and copy. Idle / playing / over visuals are driven by data-game-state.
+ * and copy. Idle / playing / over visuals are driven by data-game-state. First session
+ * only: instructions → sound prompt → live play; stars spawn only in the live phase.
  *
  * Best is a shared site record (fetched/posted to a hobby high-score API) so every
  * visitor sees the same number to beat. Loop runs on gsap.ticker while a round is
@@ -12,7 +13,7 @@
  * failed sprite load → leave the idle card as-is.
  */
 
-import { ensureAudio, isSoundOn, playCatch, playMiss, playGameOver } from "./sound.js";
+import { ensureAudio, isSoundOn, playCatch, playMiss, playGameOver, setSoundOn } from "./sound.js";
 
 const LIVES = 3;
 
@@ -25,26 +26,92 @@ const SITE_ADD_URL = "https://highscore.sasagu.com/api/v1/add-score";
 const SITE_SCORE_CAP = 300; /* reject impossible POSTs from a poked console */
 
 /*
- * Ramp keyed to score. Desktop tops out ~40; mobile keeps climbing to 120 with a
- * harsher ceiling — the narrower field + finger scrub is otherwise much easier.
+ * Ramp keyed to score. Both profiles use the star-ramp-tuner model: log speed,
+ * eased spawn, waves, ramped jitter, then a slow uncapped speed creep after
+ * SPEED_CREEP_AFTER (spawn stays hard-capped). Desktop is pared for mouse +
+ * a narrower centred field; mobile is tuned for finger scrub on a wider phone
+ * field.
  */
+const LOG_SHAPE = 0.25;
+const SPEED_CREEP_AFTER = 160;
+
 const DESKTOP_TUNE = {
   fallAt0: 140 /* px/s */,
-  fallAtMax: 420,
+  fallAtMax: 400,
   spawnAt0: 1.1 /* seconds */,
-  spawnAtMax: 0.35,
-  rampScore: 40,
-  speedJitter: 0.15,
+  spawnAtMax: 0.32,
+  rampScore: 140,
+  speedCurve: "log",
+  spawnCurve: "pow065",
+  speedWaves: 1.5,
+  speedWaveDepth: 0.12,
+  spawnWaves: 1.5,
+  spawnWaveDepth: 0.06,
+  jitterMin: 0.3,
+  jitterMax: 0.15,
+  jitterWaves: 0,
+  jitterWaveDepth: 0.06,
+  speedCreep: true,
+  creepPerStar: 0.4 /* px/s per star past SPEED_CREEP_AFTER */,
 };
 const MOBILE_TUNE = {
   fallAt0: 140,
   fallAtMax: 540,
   spawnAt0: 1.1,
   spawnAtMax: 0.25,
-  rampScore: 120,
-  speedJitter: 0.22,
+  rampScore: 130,
+  speedCurve: "log",
+  spawnCurve: "pow065",
+  speedWaves: 1.5,
+  speedWaveDepth: 0.12,
+  spawnWaves: 1.5,
+  spawnWaveDepth: 0.09,
+  jitterMin: 0.12,
+  jitterMax: 0.22,
+  jitterWaves: 10,
+  jitterWaveDepth: 0.5,
+  speedCreep: true,
+  creepPerStar: 0.55,
 };
 const MOBILE_QUERY = "(max-width: 767px)";
+const SOUND_PROMPT_KEY = "ll:game-sound-prompted";
+/* Intro pacing — first-session cue hand-offs only. */
+const CUE_GAP_MS = 700;
+const CUE_CROSSFADE_MS = 550;
+
+function easeCurve(t, type) {
+  const c = Math.min(1, Math.max(0, t));
+  switch (type) {
+    case "easeOut":
+      return 1 - (1 - c) * (1 - c);
+    case "smoothstep":
+      return c * c * (3 - 2 * c);
+    case "pow065":
+      return Math.pow(c, 0.65);
+    case "easeIn":
+      return c * c;
+    case "linear":
+    case "log":
+    default:
+      return c;
+  }
+}
+
+function curveProgress(starsAt, rampScore, curve) {
+  if (curve === "log") {
+    const s0 = Math.max(1, rampScore * LOG_SHAPE);
+    const denom = Math.log(1 + rampScore / s0);
+    return denom > 0 ? Math.log(1 + starsAt / s0) / denom : 0;
+  }
+  return easeCurve(Math.min(1, starsAt / rampScore), curve);
+}
+
+function waveTerm(starsAt, rampScore, waveCount, waveAmp) {
+  if (waveCount > 0 && waveAmp > 0) {
+    return waveAmp * Math.sin((2 * Math.PI * waveCount * starsAt) / Math.max(1, rampScore));
+  }
+  return 0;
+}
 
 const PLAYER_W = 56;
 const PLAYER_H = 68;
@@ -77,6 +144,10 @@ export function initGame() {
   const message = stage.querySelector("[data-game-message]");
   const hint = stage.querySelector("[data-game-hint]");
   const playHint = stage.querySelector("[data-game-play-hint]");
+  const gotItBtn = stage.querySelector("[data-game-got-it]");
+  const soundPrompt = stage.querySelector("[data-game-sound-prompt]");
+  const soundYes = stage.querySelector("[data-game-sound-yes]");
+  const soundNo = stage.querySelector("[data-game-sound-no]");
   const scoreOut = stage.querySelector("[data-game-score]");
   const bestOut = stage.querySelector("[data-game-best]");
   const status = stage.querySelector("[data-game-status]");
@@ -107,10 +178,11 @@ export function initGame() {
   let w = 0;
   let h = 0;
   let floorPad = FALLBACK_FLOOR_PAD;
-  let hintTimer = 0;
+  let introRun = 0;
 
   const state = {
     mode: "idle", // idle | playing | over | paused
+    phase: "intro", // intro | sound | live — only while mode is playing
     score: 0,
     misses: 0,
     streak: 0,
@@ -211,17 +283,108 @@ export function initGame() {
     return String(Math.max(0, n)).padStart(3, "0");
   }
 
+  function setCue(el, visible) {
+    if (!el) return;
+    el.hidden = !visible;
+  }
+
+  function hideCue(el) {
+    setCue(el, false);
+  }
+
   function hidePlayHint() {
-    if (playHint) playHint.hidden = true;
-    hintTimer = 0;
+    setCue(gotItBtn, false);
+    setCue(playHint, false);
+    return Promise.resolve();
   }
 
   function showPlayHint() {
-    if (!playHint) return;
-    playHint.hidden = false;
-    hintTimer = 2.4;
+    setCue(playHint, true);
+    return Promise.resolve();
   }
 
+  function hideSoundPrompt() {
+    setCue(soundPrompt, false);
+    return Promise.resolve();
+  }
+
+  function showSoundPrompt() {
+    setCue(soundPrompt, true);
+    return Promise.resolve();
+  }
+
+  function cancelIntro() {
+    introRun += 1;
+    hideCue(gotItBtn);
+    hideCue(playHint);
+    hideCue(soundPrompt);
+  }
+
+  function runIntroSequence() {
+    /* First session only: instructions + Got it → sound → live.
+       Returning players skip cues and start catching immediately. */
+    if (!hasSeenSoundPrompt()) {
+      state.phase = "intro";
+      setCue(gotItBtn, true);
+      showPlayHint();
+      gotItBtn?.focus({ preventScroll: true });
+      say("Scroll or tap to catch the stars. You have three chances. Press Got it to continue.");
+      return;
+    }
+
+    hidePlayHint();
+    beginLive();
+  }
+
+  async function onGotIt() {
+    if (state.phase !== "intro") return;
+    const runId = introRun;
+
+    state.phase = "sound";
+    hidePlayHint();
+    await new Promise((r) => setTimeout(r, CUE_CROSSFADE_MS));
+    if (runId !== introRun) return;
+    showSoundPrompt();
+    await new Promise((r) => setTimeout(r, CUE_GAP_MS));
+    if (runId !== introRun) return;
+    soundYes?.focus({ preventScroll: true });
+    say("Turn on sound? Choose Yes or No to start.");
+  }
+
+  function hasSeenSoundPrompt() {
+    try {
+      return localStorage.getItem(SOUND_PROMPT_KEY) === "1";
+    } catch {
+      return false;
+    }
+  }
+
+  function markSoundPromptSeen() {
+    try {
+      localStorage.setItem(SOUND_PROMPT_KEY, "1");
+    } catch {
+      /* Safari private mode — skip persist; may re-prompt next visit */
+    }
+  }
+
+  function beginLive() {
+    state.phase = "live";
+    hideCue(gotItBtn);
+    hideCue(playHint);
+    hideCue(soundPrompt);
+    state.spawnIn = 0.6;
+    say("Catch the stars. Move with the arrow keys, or drag. Escape to quit.");
+    canvas.focus({ preventScroll: true });
+  }
+
+  async function onSoundChoice(yes) {
+    markSoundPromptSeen();
+    ensureAudio();
+    if (yes) setSoundOn(true);
+    introRun += 1;
+    await hideSoundPrompt();
+    beginLive();
+  }
   function start() {
     if (sprite.complete && !sprite.naturalWidth) return; // load failed — stay idle
     if (!sprite.complete) {
@@ -234,6 +397,7 @@ export function initGame() {
     tune = mobileMq.matches ? MOBILE_TUNE : DESKTOP_TUNE;
 
     state.mode = "playing";
+    state.phase = "intro";
     state.score = 0;
     state.misses = 0;
     state.streak = 0;
@@ -251,18 +415,25 @@ export function initGame() {
     setState("playing");
     if (message) message.textContent = IDLE_PROMPT;
     if (hint) hint.textContent = "";
+    hideCue(gotItBtn);
+    hideCue(playHint);
+    hideCue(soundPrompt);
     syncHud();
-    showPlayHint();
-    say("Game started. Move with the arrow keys, or drag. Escape to quit.");
 
-    canvas.focus({ preventScroll: true });
+    introRun += 1;
+    runIntroSequence();
+
     startLoop();
+    draw();
   }
 
   function end() {
+    cancelIntro();
     stopLoop();
     setState("over");
-    hidePlayHint();
+    hideCue(gotItBtn);
+    hideCue(playHint);
+    hideCue(soundPrompt);
 
     const isBest = state.score > state.best;
     if (isBest) {
@@ -302,27 +473,41 @@ export function initGame() {
 
   /* ——— Sim ——— */
 
-  function rampT() {
-    return Math.min(1, state.score / tune.rampScore);
-  }
-
   function fallSpeed() {
-    const t = rampT();
-    return tune.fallAt0 + (tune.fallAtMax - tune.fallAt0) * t;
+    const starsAt = state.score;
+    const shapedAt = tune.speedCreep ? Math.min(starsAt, SPEED_CREEP_AFTER) : starsAt;
+    let p =
+      curveProgress(shapedAt, tune.rampScore, tune.speedCurve) +
+      waveTerm(shapedAt, tune.rampScore, tune.speedWaves, tune.speedWaveDepth);
+    if (!tune.speedCreep) p = Math.min(1, Math.max(0, p));
+    else p = Math.max(0, p);
+    let speed = tune.fallAt0 + (tune.fallAtMax - tune.fallAt0) * p;
+    if (tune.speedCreep && starsAt > SPEED_CREEP_AFTER) {
+      speed += tune.creepPerStar * (starsAt - SPEED_CREEP_AFTER);
+    }
+    return speed;
   }
 
   function spawnInterval() {
-    const t = rampT();
-    return tune.spawnAt0 + (tune.spawnAtMax - tune.spawnAt0) * t;
+    let p =
+      curveProgress(state.score, tune.rampScore, tune.spawnCurve) +
+      waveTerm(state.score, tune.rampScore, tune.spawnWaves, tune.spawnWaveDepth);
+    p = Math.min(1, Math.max(0, p));
+    return tune.spawnAt0 + (tune.spawnAtMax - tune.spawnAt0) * p;
+  }
+
+  function speedJitter() {
+    let p =
+      Math.min(1, state.score / tune.rampScore) +
+      waveTerm(state.score, tune.rampScore, tune.jitterWaves, tune.jitterWaveDepth);
+    p = Math.min(1, Math.max(0, p));
+    return tune.jitterMin + (tune.jitterMax - tune.jitterMin) * p;
   }
 
   function update(dt) {
     const p = state.player;
 
-    if (hintTimer > 0) {
-      hintTimer -= dt;
-      if (hintTimer <= 0) hidePlayHint();
-    }
+    if (state.phase !== "live") return;
 
     let dir = 0;
     if (state.keys.has("left")) dir -= 1;
@@ -331,11 +516,9 @@ export function initGame() {
     if (dir) {
       p.target = null;
       p.targetVx = dir * PLAYER_SPEED;
-      hidePlayHint();
     } else if (p.target !== null) {
       p.targetVx = 0;
       p.x += (p.target - PLAYER_W / 2 - p.x) * Math.min(1, POINTER_EASE * dt);
-      hidePlayHint();
     } else {
       p.targetVx = 0;
     }
@@ -412,7 +595,7 @@ export function initGame() {
     const r = STAR_SIZE / 2;
     const x = r + 8 + Math.random() * Math.max(1, w - (r + 8) * 2);
     const base = fallSpeed();
-    const jitter = 1 + (Math.random() * 2 - 1) * tune.speedJitter;
+    const jitter = 1 + (Math.random() * 2 - 1) * speedJitter();
     state.stars.push({
       x,
       y: -r,
@@ -535,12 +718,37 @@ export function initGame() {
 
   startBtn.addEventListener("click", start);
 
+  gotItBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (state.phase !== "intro") return;
+    onGotIt();
+  });
+
+  soundYes?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (state.phase !== "sound") return;
+    onSoundChoice(true);
+  });
+
+  soundNo?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (state.phase !== "sound") return;
+    onSoundChoice(false);
+  });
+
   canvas.addEventListener("keydown", onKeyDown);
   canvas.addEventListener("keyup", onKeyUp);
   window.addEventListener("keydown", onWindowKeyDown, true);
 
   function onKeyDown(e) {
     if (state.mode !== "playing") return;
+    if (state.phase === "intro" || state.phase === "sound") {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        quit();
+      }
+      return;
+    }
     const k = e.key;
     if (k === "ArrowLeft" || k === "a" || k === "A") state.keys.add("left");
     else if (k === "ArrowRight" || k === "d" || k === "D") state.keys.add("right");
@@ -562,7 +770,7 @@ export function initGame() {
 
   /* While playing, stop space/arrows from scrolling the page even if focus left the canvas. */
   function onWindowKeyDown(e) {
-    if (state.mode !== "playing") return;
+    if (state.mode !== "playing" || state.phase !== "live") return;
     const k = e.key;
     if (
       k === " " ||
@@ -577,13 +785,13 @@ export function initGame() {
   }
 
   canvas.addEventListener("pointerdown", (e) => {
-    if (state.mode !== "playing") return;
+    if (state.mode !== "playing" || state.phase !== "live") return;
     canvas.setPointerCapture(e.pointerId);
     state.player.target = pointerX(e);
   });
 
   canvas.addEventListener("pointermove", (e) => {
-    if (state.mode !== "playing") return;
+    if (state.mode !== "playing" || state.phase !== "live") return;
     if (e.pointerType === "mouse" || e.buttons) state.player.target = pointerX(e);
   });
 
