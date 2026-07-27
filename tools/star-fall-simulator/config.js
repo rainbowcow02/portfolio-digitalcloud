@@ -21,10 +21,8 @@ const MODE_SETTINGS = {
     pageHeading: "Star fall sim (for cooking)",
     pageIntro:
       "Private tuning workspace for Catch the stars. Settings persist in this browser. When a proposal feels right, paste the tuned values into js/game.js.",
-    footnoteMobile: (creepAfter, creepPerStar) =>
-      `Mobile proposal matches js/game.js (shaped speed, creep after ${creepAfter}, spawn capped).`,
-    footnoteDesktop: (creepAfter, creepPerStar, fieldWidth) =>
-      `Desktop matches js/game.js: log speed, eased spawn, waves, ramped jitter, ${fieldWidth}px field, creep +${creepPerStar} px/s after ${creepAfter}.`,
+    footnote:
+      "Tweak the controls below to reshape the proposed curves. Charts compare your proposal to Current (in game). Reset restores this device’s defaults.",
     robots: "noindex, nofollow",
   },
   demo: {
@@ -37,10 +35,8 @@ const MODE_SETTINGS = {
     pageHeading: "Catch the stars simulator",
     pageIntro:
       "Explore how I set speed, density, and randomness for the mobile and desktop versions of the game in this sandbox. (They're different!) Changes made here will reset when you close the tab.",
-    footnoteMobile: (creepAfter) =>
-      `Mobile curve: speed shapes up to ${creepAfter} stars, then creeps faster; spawn interval tightens over time.`,
-    footnoteDesktop: (creepAfter, creepPerStar, fieldWidth) =>
-      `Desktop curve: log-shaped speed, eased spawn density, optional waves, and ramped jitter on a ${fieldWidth}px field. After ${creepAfter} stars, speed creeps +${creepPerStar} px/s per star.`,
+    footnote:
+      "Tweak the controls below to reshape speed, density, and randomness. Charts compare your proposal to what’s live in the game. Reset restores this device’s defaults.",
     robots: null,
   },
 };

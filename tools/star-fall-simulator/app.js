@@ -7,7 +7,7 @@
  * from the dev workspace when you're happy with a proposal.
  */
 
-import { MODE, getStorage } from "./config.js";
+import { MODE, SIM_MODE, getStorage } from "./config.js";
 
 // ─── Tweak these defaults ───────────────────────────────────────────────────
 
@@ -337,6 +337,29 @@ function proposedTune() {
   };
 }
 
+/** Shipped game profile for this device (PROFILE_DEFAULTS + TUNE endpoints). */
+function gameDefaultsProfile() {
+  return PROFILE_DEFAULTS[state.device];
+}
+
+function gameDefaultsTune() {
+  const current = TUNE[state.device];
+  const p = gameDefaultsProfile();
+  return {
+    ...current,
+    fallAtMax: p.fallAtMax,
+    spawnAtMax: p.spawnAtMax,
+    rampScore: p.rampScore,
+  };
+}
+
+/** True when the active device profile differs from shipped game defaults. */
+function profileIsDirty() {
+  const p = profile();
+  const defaults = gameDefaultsProfile();
+  return Object.keys(defaults).some((key) => p[key] !== defaults[key]);
+}
+
 // ─── DOM helpers ────────────────────────────────────────────────────────────
 
 const $ = (id) => document.getElementById(id);
@@ -445,7 +468,7 @@ function syncAllControls() {
   const logHint = p.speedCurve === "log" || p.spawnCurve === "log";
   $("rampScoreHint").textContent = logHint
     ? "Stars at max (log keeps climbing)"
-    : "Stars when curves reach full";
+    : "Stars when curves reach full ramp";
 
   $("speedWaveDepth").disabled = p.speedWaves <= 0;
   $("spawnWaveDepth").disabled = p.spawnWaves <= 0;
@@ -472,10 +495,7 @@ function syncAllControls() {
   clampPlayer();
   renderPlayerDom();
 
-  $("footnote").textContent =
-    state.device === "mobile"
-      ? MODE.footnoteMobile(SPEED_CREEP_AFTER, p.creepPerStar)
-      : MODE.footnoteDesktop(SPEED_CREEP_AFTER, p.creepPerStar, p.fieldWidth);
+  $("footnote").textContent = MODE.footnote;
 }
 
 // ─── Charts ─────────────────────────────────────────────────────────────────
@@ -701,31 +721,69 @@ function updateLiveChartMarkers(score) {
 function renderCharts(simScore) {
   ensureCharts();
   const p = profile();
-  const current = TUNE[state.device];
+  const defaults = gameDefaultsProfile();
+  const gameTune = gameDefaultsTune();
   const tune = proposedTune();
   const stars = buildStars(state.xMax);
+  // Public sandbox: baseline only after edits. Dev always compares to shipped game.
+  const showCurrent = SIM_MODE !== "demo" || profileIsDirty();
+  const proposedLabel = SIM_MODE === "demo" && !showCurrent ? "In game" : "Proposed";
 
   const fallCurrent = (s) =>
-    lerp(current.fallAt0, current.fallAtMax, ease(rampT(s, current.rampScore), "linear"));
+    fallSpeedAt(
+      s,
+      gameTune,
+      defaults.rampScore,
+      defaults.speedCurve,
+      defaults.speedWaves,
+      defaults.speedWaveDepth,
+      defaults.creepPerStar,
+    );
   const fallProposed = (s) =>
     fallSpeedAt(s, tune, p.rampScore, p.speedCurve, p.speedWaves, p.speedWaveDepth, p.creepPerStar);
   const spawnCurrent = (s) =>
-    lerp(current.spawnAt0, current.spawnAtMax, ease(rampT(s, current.rampScore), "linear"));
+    spawnIntervalAt(
+      s,
+      gameTune,
+      defaults.rampScore,
+      defaults.spawnCurve,
+      defaults.spawnWaves,
+      defaults.spawnWaveDepth,
+    );
   const spawnProposed = (s) =>
     spawnIntervalAt(s, tune, p.rampScore, p.spawnCurve, p.spawnWaves, p.spawnWaveDepth);
   const jitterProposed = (s) =>
     jitterAt(s, p.rampScore, p.jitterMin, p.jitterMax, p.jitterWaves, p.jitterWaveDepth);
 
-  const point = (stars, fn) => stars.map((s) => ({ x: s, y: fn(s) }));
+  const point = (xs, fn) => xs.map((s) => ({ x: s, y: fn(s) }));
 
-  updateChart(charts.fall, "fall", [
-    { name: "Current (in game)", data: point(stars, (s) => round(fallCurrent(s))), tone: "neutral" },
-    { name: "Proposed", data: point(stars, (s) => round(fallProposed(s))), tone: "info" },
-  ]);
-  updateChart(charts.spawn, "spawn", [
-    { name: "Current (in game)", data: point(stars, (s) => round(spawnCurrent(s), 2)), tone: "neutral" },
-    { name: "Proposed", data: point(stars, (s) => round(spawnProposed(s), 2)), tone: "info" },
-  ]);
+  const fallSeries = [];
+  const spawnSeries = [];
+  if (showCurrent) {
+    fallSeries.push({
+      name: "Current (in game)",
+      data: point(stars, (s) => round(fallCurrent(s))),
+      tone: "neutral",
+    });
+    spawnSeries.push({
+      name: "Current (in game)",
+      data: point(stars, (s) => round(spawnCurrent(s), 2)),
+      tone: "neutral",
+    });
+  }
+  fallSeries.push({
+    name: proposedLabel,
+    data: point(stars, (s) => round(fallProposed(s))),
+    tone: "info",
+  });
+  spawnSeries.push({
+    name: proposedLabel,
+    data: point(stars, (s) => round(spawnProposed(s), 2)),
+    tone: "info",
+  });
+
+  updateChart(charts.fall, "fall", fallSeries);
+  updateChart(charts.spawn, "spawn", spawnSeries);
   updateChart(charts.rand, "rand", [
     {
       name: "Max (+jitter)",

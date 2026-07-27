@@ -183,6 +183,10 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+body {
+  padding-bottom: var(--space-10);
+}
+
 code {
   font-family: var(--mono);
   font-size: 0.92em;
@@ -196,12 +200,25 @@ code {
 .page {
   max-width: 1440px;
   margin: 0 auto;
-  padding: var(--space-6);
+  padding: var(--space-10) var(--space-6) 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-7);
   width: 100%;
   box-sizing: border-box;
+}
+
+.page-footer {
+  margin-top: auto;
+  padding-top: var(--space-4);
+}
+
+.page-footer p {
+  margin: 0;
+  color: var(--text-tertiary);
+  font-size: var(--font-body);
+  line-height: var(--lh-body);
+  font-weight: var(--weight-normal);
 }
 
 .page-header {
@@ -655,8 +672,8 @@ code {
   min-width: 0;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  /* Chart block + 4 control rows; subgrid keeps matching rows aligned. */
-  grid-template-rows: auto repeat(4, auto);
+  /* Chart block + summary bar + 4 control rows; subgrid keeps matching rows aligned. */
+  grid-template-rows: auto auto repeat(4, auto);
   column-gap: var(--space-6);
   row-gap: var(--space-6);
 }
@@ -664,18 +681,47 @@ code {
 .chart-col {
   display: grid;
   grid-template-rows: subgrid;
-  grid-row: span 5;
+  grid-row: span 6;
   min-width: 0;
 }
 
-/* Preserve former space-7 between chart block and first control. */
-.chart-col > .field:first-child {
-  margin-bottom: calc(var(--space-7) - var(--space-6));
+/* Keep chart tops aligned when one subtitle wraps to two lines. */
+.chart-col > .field:first-child > .field-sub {
+  min-height: calc(var(--lh-small) * 2);
 }
 
-/* Keep chart tops aligned when one subtitle wraps to two lines. */
-.chart-col > .field > .field-sub {
-  min-height: calc(var(--lh-small) * 2);
+/* Reserves the summary row inside each column so the spanning bar can sit here. */
+.summary-slot {
+  min-height: 0;
+  pointer-events: none;
+}
+
+.summary-bar {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 90px;
+  min-width: 0;
+}
+
+.footnote {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--text-tertiary);
+  font-size: var(--font-body);
+  line-height: var(--lh-body);
+  font-weight: var(--weight-normal);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2-5);
+  flex: 0 0 auto;
 }
 
 /*
@@ -754,35 +800,50 @@ code {
   transform: translate(-50%, -50%);
 }
 
-.footnote {
-  margin: 0;
-  font-size: var(--font-small);
-  line-height: var(--lh-small);
-  color: var(--text-tertiary);
-}
-
-.toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2-5);
-}
-
 @media (max-width: 1100px) {
   .charts-grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: none;
+    display: flex;
+    flex-direction: column;
     gap: var(--space-6);
   }
 
   .chart-col {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-7);
-    grid-row: auto;
+    display: contents;
   }
 
-  .chart-col > .field:first-child {
-    margin-bottom: 0;
+  .summary-slot {
+    display: none;
+  }
+
+  .summary-bar {
+    grid-column: auto;
+    grid-row: auto;
+    order: 2;
+    flex-wrap: wrap;
+  }
+
+  .charts-grid > .chart-col:nth-child(1) > .field:first-child {
+    order: 1;
+  }
+
+  .charts-grid > .chart-col:nth-child(1) > .control-stack {
+    order: 3;
+  }
+
+  .charts-grid > .chart-col:nth-child(2) > .field:first-child {
+    order: 4;
+  }
+
+  .charts-grid > .chart-col:nth-child(2) > .control-stack {
+    order: 5;
+  }
+
+  .charts-grid > .chart-col:nth-child(3) > .field:first-child {
+    order: 6;
+  }
+
+  .charts-grid > .chart-col:nth-child(3) > .control-stack {
+    order: 7;
   }
 
   .control-stack {

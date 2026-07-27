@@ -79,7 +79,7 @@
 
         <label class="field" style="--field-w: 200px">
           <span class="field-label">rampScore</span>
-          <span class="field-sub" id="rampScoreHint">Stars when curves reach full</span>
+          <span class="field-sub" id="rampScoreHint">Stars when curves reach full ramp</span>
           <div class="number-field">
             <input
               id="rampScore"
@@ -170,6 +170,7 @@
               </div>
               <div class="chart-legend" id="fallLegend"></div>
             </div>
+            <div class="summary-slot" aria-hidden="true"></div>
             <div class="control-stack">
               <label class="field">
                 <span class="field-label">Speed curve</span>
@@ -234,6 +235,7 @@
               </div>
               <div class="chart-legend" id="spawnLegend"></div>
             </div>
+            <div class="summary-slot" aria-hidden="true"></div>
             <div class="control-stack">
               <label class="field">
                 <span class="field-label">Spawn curve</span>
@@ -298,6 +300,7 @@
               </div>
               <div class="chart-legend" id="randLegend"></div>
             </div>
+            <div class="summary-slot" aria-hidden="true"></div>
             <div class="control-stack">
               <label class="field">
                 <span class="field-label">Jitter min</span>
@@ -337,12 +340,17 @@
               </label>
             </div>
           </section>
+
+          <div class="summary-bar">
+            <p class="footnote" id="footnote"></p>
+            <div class="toolbar" id="devToolbar">
+              <button type="button" id="btnResetDefaults" class="btn btn-secondary">Reset to defaults</button>
+            </div>
+          </div>
         </div>
       </section>
 
-      <p class="footnote" id="footnote"></p>
-
-      <div class="toolbar" id="devToolbar">
-        <button type="button" id="btnResetDefaults" class="btn btn-secondary">Reset device to defaults</button>
-      </div>
+      <footer class="page-footer">
+        <p>Tool made by Lindsay and is a work in progress.</p>
+      </footer>
     </main>
