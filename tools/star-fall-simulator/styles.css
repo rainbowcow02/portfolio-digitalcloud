@@ -540,6 +540,11 @@ code {
   margin: 0;
 }
 
+/* Only used when the main layout collapses to a single column. */
+.stack-divider {
+  display: none;
+}
+
 .main-layout {
   display: flex;
   flex-wrap: wrap;
@@ -702,7 +707,9 @@ code {
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 90px;
+  column-gap: 90px;
+  row-gap: var(--space-6);
+  gap: var(--space-6) 90px;
   min-width: 0;
 }
 
@@ -800,10 +807,21 @@ code {
 }
 
 @media (max-width: 1100px) {
+  .main-layout {
+    flex-direction: column;
+    gap: var(--space-7);
+  }
+
+  .stack-divider {
+    display: block;
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
   .charts-grid {
     display: flex;
     flex-direction: column;
-    gap: var(--space-6);
+    gap: var(--space-7);
   }
 
   .chart-col {
@@ -814,35 +832,52 @@ code {
     display: none;
   }
 
+  /* Keep help + reset above all charts/controls in the single-column stack. */
   .summary-bar {
     grid-column: auto;
     grid-row: auto;
-    order: 2;
-    flex-wrap: wrap;
+    order: 1;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: var(--space-6);
+    column-gap: var(--space-6);
+    row-gap: var(--space-6);
+    padding-bottom: var(--space-6);
   }
 
   .charts-grid > .chart-col:nth-child(1) > .field:first-child {
-    order: 1;
+    order: 2;
   }
 
   .charts-grid > .chart-col:nth-child(1) > .control-stack {
     order: 3;
   }
 
-  .charts-grid > .chart-col:nth-child(2) > .field:first-child {
+  /* stack-divider before spawn */
+  .charts-grid > .stack-divider:nth-child(2) {
     order: 4;
   }
 
-  .charts-grid > .chart-col:nth-child(2) > .control-stack {
+  .charts-grid > .chart-col:nth-child(3) > .field:first-child {
     order: 5;
   }
 
-  .charts-grid > .chart-col:nth-child(3) > .field:first-child {
+  .charts-grid > .chart-col:nth-child(3) > .control-stack {
     order: 6;
   }
 
-  .charts-grid > .chart-col:nth-child(3) > .control-stack {
+  /* stack-divider before randomness */
+  .charts-grid > .stack-divider:nth-child(4) {
     order: 7;
+  }
+
+  .charts-grid > .chart-col:nth-child(5) > .field:first-child {
+    order: 8;
+  }
+
+  .charts-grid > .chart-col:nth-child(5) > .control-stack {
+    order: 9;
   }
 
   .control-stack {
