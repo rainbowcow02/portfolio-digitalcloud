@@ -36,7 +36,7 @@ const MODE_SETTINGS = {
     pageTitle: "Catch the stars simulator",
     pageHeading: "Catch the stars simulator",
     pageIntro:
-      "Explore how difficulty ramps as you collect stars — fall speed, spawn density, and per-star randomness. Changes here are sandboxed and reset when you close this tab; they do not affect the game on the portfolio.",
+      "Explore how I set speed, density, and randomness for the mobile and desktop versions of the game in this sandbox. (They're different!) Changes made here will reset when you close the tab.",
     footnoteMobile: (creepAfter) =>
       `Mobile curve: speed shapes up to ${creepAfter} stars, then creeps faster; spawn interval tightens over time.`,
     footnoteDesktop: (creepAfter, creepPerStar, fieldWidth) =>
